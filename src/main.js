@@ -368,6 +368,7 @@ document.querySelectorAll('[data-group]').forEach(btn=>{
 
 
 document.getElementById('undo').addEventListener('click', ()=>{
+  if (!isSubscribed() && getDemoClicks() > DEMO_LIMIT) return;
   const last = data.history.pop();
   if (!last) return;
   if (last==='A') data.aces_count -= 1;
@@ -376,9 +377,11 @@ document.getElementById('undo').addEventListener('click', ()=>{
   renderState();
 });
 document.getElementById('reset').addEventListener('click', ()=>{
+  if (!isSubscribed() && getDemoClicks() > DEMO_LIMIT) return;
   data.count = 0; data.cards_entered = 0; data.aces_count = 0; data.history = [];
   renderState();
 });
+
 
 function parseHandInput(textHand, textDealer){
   const clean = s => (s || '').trim().toLowerCase().replace(/\s+/g,'');
