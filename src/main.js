@@ -335,38 +335,19 @@ function round(x,n=2){ return Math.round(x*10**n)/10**n; }
 function getTrueCount(){ return round(data.count / getRemainingDecks(), 2); }
 function edgeText(tc){ return tc<=0 ? "⚠️ Low count — minimum or skip the hand" : `📈 Edge: ${round(tc*0.5,2)}%`; }
 
-function renderState() {
-  // --- Константы (глобально) ---
-const TOTAL_DECKS = 8;
-const TOTAL_CARDS = TOTAL_DECKS * 52;
-const TOTAL_ACES  = TOTAL_DECKS * 4;
-
-// --- Хелперы ---
-function round(x, n = 2){ return Math.round(x * 10**n) / 10**n; }
-function getRemainingDecks(){ return Math.max((TOTAL_CARDS - data.cards_entered) / 52, 1); }
-function getTrueCount(){ return round(data.count / getRemainingDecks(), 2); }
-function edgeText(tc){
-  return tc <= 0
-    ? "⚠️ Low count — minimum or skip the hand"
-    : `📈 Edge: ${round(tc * 0.5, 2)}%`;
-}
-
-// --- Рендер состояния (без Running Count) ---
-function renderState() {
-  const remainingDecks = round(getRemainingDecks(), 2);
-  const trueCount = getTrueCount();
-  const edgeMsg = edgeText(trueCount);
-
+function renderState(){
+  const remainingDecks = round(getRemainingDecks(),2);
+  const tc = getTrueCount();
   stateEl.textContent = `
 🂠 Cards seen: ${data.cards_entered} / ${TOTAL_CARDS}
 🂱 Aces seen: ${data.aces_count} / ${TOTAL_ACES}
 📉 Decks remaining: ${remainingDecks}
 📈 True Count: ${trueCount}
 ${edgeMsg}
-  `;
+`;
+
 }
 
-// --- Клики по группам карт ---
 document.querySelectorAll('[data-group]').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     if (!isSubscribed()) {
@@ -378,32 +359,27 @@ document.querySelectorAll('[data-group]').forEach(btn=>{
       }
     }
     const g = btn.getAttribute('data-group');
-    if (g === 'A') data.aces_count += 1;
+    if (g==='A') data.aces_count += 1;
     else data.count += groupValues[g] || 0;
-
     data.cards_entered += 1;
     data.history.push(g);
     renderState();
   });
 });
 
-// --- Undo / Reset ---
+
 document.getElementById('undo').addEventListener('click', ()=>{
   if (!isSubscribed() && getDemoClicks() > DEMO_LIMIT) return;
   const last = data.history.pop();
   if (!last) return;
-  if (last === 'A') data.aces_count -= 1;
+  if (last==='A') data.aces_count -= 1;
   else data.count -= groupValues[last] || 0;
   data.cards_entered -= 1;
   renderState();
 });
-
 document.getElementById('reset').addEventListener('click', ()=>{
   if (!isSubscribed() && getDemoClicks() > DEMO_LIMIT) return;
-  data.count = 0;
-  data.cards_entered = 0;
-  data.aces_count = 0;
-  data.history = [];
+  data.count = 0; data.cards_entered = 0; data.aces_count = 0; data.history = [];
   renderState();
 });
 
