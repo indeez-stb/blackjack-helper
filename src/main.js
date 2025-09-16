@@ -338,13 +338,14 @@ function edgeText(tc){ return tc<=0 ? "⚠️ Low count — minimum or skip the 
 function renderState(){
   const remainingDecks = round(getRemainingDecks(),2);
   const tc = getTrueCount();
-  stateEl.textContent =
-`📊 Running Count: ${round(data.count,2)}
-🂠 Cards played: ${data.cards_entered} / ${TOTAL_CARDS}
-🂱 Aces played: ${data.aces_count} / ${TOTAL_ACES}
-📉 Remaining decks: ${remainingDecks}
-📈 True Count: ${tc}
-${edgeText(tc)}`;
+  stateEl.textContent = `
+🂠 Cards seen: ${data.cards_entered} / ${TOTAL_CARDS}
+🂱 Aces seen: ${data.aces_count} / ${TOTAL_ACES}
+📉 Decks remaining: ${remainingDecks}
+📈 True Count: ${trueCount}
+${edgeMsg}
+`;
+
 }
 
 document.querySelectorAll('[data-group]').forEach(btn=>{
