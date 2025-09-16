@@ -1,3 +1,43 @@
+const DEMO_LIMIT = 100;
+const STORAGE_KEYS = {
+  demoClicks: 'bh_demo_clicks',
+  subActive: 'bh_sub_active'
+};
+
+function isSubscribed(){
+  // подписка хранится в localStorage ('1'); также можно активировать через URL ?sub=1 для тестов
+  const url = new URL(location.href);
+  if (url.searchParams.get('sub') === '1') {
+    localStorage.setItem(STORAGE_KEYS.subActive,'1');
+    history.replaceState({},'',url.pathname + url.hash); // уберём ?sub=1 из адреса
+  }
+  return localStorage.getItem(STORAGE_KEYS.subActive) === '1';
+}
+function getDemoClicks(){
+  return parseInt(localStorage.getItem(STORAGE_KEYS.demoClicks) || '0', 10);
+}
+function setDemoClicks(v){
+  localStorage.setItem(STORAGE_KEYS.demoClicks, String(v));
+  const chip = document.getElementById('demo-chip');
+  if (chip && !isSubscribed()) chip.textContent = `Демо: ${Math.min(v,DEMO_LIMIT)} / ${DEMO_LIMIT}`;
+  if (chip && isSubscribed()) chip.textContent = 'Подписка активна';
+}
+function disableControls(disabled){
+  document.querySelectorAll('[data-group],#undo,#reset').forEach(el => el.disabled = disabled);
+}
+function showPaywall(){
+  const ov = document.getElementById('paywall');
+  ov?.classList.remove('hidden');
+  ov?.setAttribute('aria-hidden','false');
+  disableControls(true);
+}
+function hidePaywall(){
+  const ov = document.getElementById('paywall');
+  ov?.classList.add('hidden');
+  ov?.setAttribute('aria-hidden','true');
+  if (isSubscribed()) disableControls(false);
+}
+
 // Группы карт и их веса Wong Halves
 const groupValues = {
   '2 / 7': 0.5,
