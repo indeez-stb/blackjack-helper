@@ -82,4 +82,24 @@ pre{white-space:pre-wrap;border:1px solid #1f2937;background:#0b1220;border-radi
   position: absolute;
   right: 16px; /* кнопки справа */
 }
+/* ссылка-бренд в шапке как кнопка "на главную" */
+.brand-link{
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: background .15s ease, border-color .15s ease;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.brand-link:hover{
+  background: #0b1220;
+  border-color: #1f2937;
+}
+.brand-link:focus-visible{
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+  border-color: #60a5fa;
+}
 
