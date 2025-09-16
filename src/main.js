@@ -290,7 +290,7 @@ function renderState(){
 `📊 Running Count: ${round(data.count,2)}
 🂠 Cards played: ${data.cards_entered} / ${TOTAL_CARDS}
 🂱 Aces played: ${data.aces_count} / ${TOTAL_ACES}
-📉 Remaining decks: ${remaining_decks = remainingDecks}
+📉 Remaining decks: ${remainingDecks}
 📈 True Count: ${tc}
 ${edgeText(tc)}`;
 }
