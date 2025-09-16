@@ -69,4 +69,17 @@ pre{white-space:pre-wrap;border:1px solid #1f2937;background:#0b1220;border-radi
   font-size: 12px;
   color: #9ca3af;
 }
+/* фикс кнопки "Рассчитать" */
+#decision-form button {
+  margin-top: 8px; /* чуть опускаем кнопку вниз */
+}
+
+/* центрируем бренд в шапке */
+.topbar {
+  justify-content: center; /* логотип по центру */
+}
+.topbar .actions {
+  position: absolute;
+  right: 16px; /* кнопки справа */
+}
 
