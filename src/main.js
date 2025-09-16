@@ -19,7 +19,248 @@ const decisionEl = document.getElementById('decision');
 const data = { count: 0, cards_entered: 0, aces_count: 0, history: [] };
 
 // TODO: Вставь сюда твой полный decision_data из бота
-const decision_data = {};
+const decision_data = {
+    "9": {
+        "2": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Double", "4": "Double", "5": "Double"},
+        "3": {"0": "Hit", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "4": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "5": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "6": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "7": {"0": "Hit", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "8": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Double", "4": "Double", "5": "Double"},
+        "9": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+        "T": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+        "A": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"}
+    },
+    "10": {
+        "2": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "3": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "4": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "5": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "6": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "7": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "8": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "9": {"0": "Hit",    "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "T": {"0": "Hit",    "1": "Hit",    "2": "Hit",    "3": "Hit",    "4": "Hit",    "5": "Hit"},
+        "A": {"0": "Hit",    "1": "Hit",    "2": "Hit",    "3": "Hit",    "4": "Hit",    "5": "Hit"}
+    },
+    "11": {
+            "2": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+            "3": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+            "4": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+            "5": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+            "6": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+            "7": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+            "8": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+            "9": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+            "T": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+            "A": {"0": "Hit",    "1": "Hit",    "2": "Hit",    "3": "Hit",    "4": "Hit",    "5": "Hit"}
+        },
+    "12": {
+            "2": {"0": "Hit", "1": "Hit", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+            "3": {"0": "Hit", "1": "Hit", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+            "4": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+            "5": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+            "6": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+            "7": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Stand", "5": "Stand"},
+            "8": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+            "9": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+            "T": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+            "A": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"}
+        },
+    "13": {
+        "2": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "3": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "4": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "5": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "6": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "7": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "8": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "9": {"0": "Hit",   "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "T": {"0": "Hit",   "1": "Hit",   "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "A": {"0": "Hit",   "1": "Hit",   "2": "Hit",   "3": "Hit",   "4": "Hit",   "5": "Hit"}
+    },
+    "14": {
+        "2": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "3": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "4": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "5": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "6": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "7": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "8": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "9": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "T": {"0": "Hit",   "1": "Hit",   "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "A": {"0": "Hit",   "1": "Hit",   "2": "Hit",   "3": "Hit",   "4": "Hit",   "5": "Hit"}
+    },
+    "15": {
+                        "2": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+                        "3": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+                        "4": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+                        "5": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+                        "6": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+                        "7": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+                        "8": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+                        "9": {"0": "Hit",   "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+                        "T": {"0": "Hit",   "1": "Hit",   "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+                        "A": {"0": "Hit",   "1": "Hit",   "2": "Hit",   "3": "Hit",   "4": "Hit",   "5": "Hit"}
+                    },
+    "16": {
+        "2": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "3": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "4": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "5": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "6": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "7": {"0": "Hit",   "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "8": {"0": "Hit",   "1": "Hit",   "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "9": {"0": "Hit",   "1": "Hit",   "2": "Hit",   "3": "Stand", "4": "Stand", "5": "Stand"},
+        "T": {"0": "Hit",   "1": "Hit",   "2": "Hit",   "3": "Hit",   "4": "Stand", "5": "Stand"},
+        "A": {"0": "Hit",   "1": "Hit",   "2": "Hit",   "3": "Hit",   "4": "Hit",   "5": "Hit"}
+    },
+    "A2": {
+        "2": {"0": "Hit",    "1": "Hit",    "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "3": {"0": "Hit",    "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "4": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "5": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "6": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "7": {"0": "Hit",    "1": "Hit",    "2": "Hit",    "3": "Hit",    "4": "Double", "5": "Double"},
+        "8": {"0": "Hit",    "1": "Hit",    "2": "Hit",    "3": "Hit",    "4": "Hit",    "5": "Hit"},
+        "9": {"0": "Hit",    "1": "Hit",    "2": "Hit",    "3": "Hit",    "4": "Hit",    "5": "Hit"},
+        "T": {"0": "Hit",    "1": "Hit",    "2": "Hit",    "3": "Hit",    "4": "Hit",    "5": "Hit"},
+        "A": {"0": "Hit",    "1": "Hit",    "2": "Hit",    "3": "Hit",    "4": "Hit",    "5": "Hit"}
+    },
+    "A3": {
+        "2": {"0": "Hit", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "3": {"0": "Hit", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "4": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "5": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "6": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "7": {"0": "Hit", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "8": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Double", "5": "Double"},
+        "9": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+        "T": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+        "A": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"}
+    },
+    "A4": {
+        "2": {"0": "Hit", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "3": {"0": "Hit", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "4": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "5": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "6": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "7": {"0": "Hit", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "8": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Double", "5": "Double"},
+        "9": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+        "T": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+        "A": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"}
+    },
+    "A5": {
+        "2": {"0": "Hit", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "3": {"0": "Hit", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "4": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "5": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "6": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "7": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Double", "5": "Double"},
+        "8": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+        "9": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+        "T": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+        "A": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"}
+    },
+    "A6": {
+        "2": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+        "3": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "4": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "5": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "6": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "7": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+        "8": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+        "9": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+        "T": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+        "A": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"}
+    },
+    "A7": {
+        "2": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "3": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "4": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "5": {"0": "Stand", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "6": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "7": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "8": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "9": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "T": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "A": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"}
+    },
+    "22": {
+        "2": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "3": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "4": {"0": "Hit", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "5": {"0": "Hit", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "6": {"0": "Hit", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "7": {"0": "Hit", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "8": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+        "9": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+        "T": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"},
+        "A": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Hit", "4": "Hit", "5": "Hit"}
+    },
+    "33": {
+        "2": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "3": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "4": {"0": "Hit",   "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "5": {"0": "Hit",   "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "6": {"0": "Hit",   "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "7": {"0": "Hit",   "1": "Hit",   "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "8": {"0": "Hit",   "1": "Hit",   "2": "Hit",   "3": "Hit",   "4": "Hit",   "5": "Hit"},
+        "9": {"0": "Hit",   "1": "Hit",   "2": "Hit",   "3": "Hit",   "4": "Hit",   "5": "Hit"},
+        "T": {"0": "Hit",   "1": "Hit",   "2": "Hit",   "3": "Hit",   "4": "Hit",   "5": "Hit"},
+        "A": {"0": "Hit",   "1": "Hit",   "2": "Hit",   "3": "Hit",   "4": "Hit",   "5": "Hit"}
+    },
+    "44": {
+        "2": {"0": "Hit",    "1": "Hit",    "2": "Hit",    "3": "Hit",    "4": "Hit",    "5": "Hit"},
+        "3": {"0": "Hit",    "1": "Hit",    "2": "Hit",    "3": "Hit",    "4": "Hit",    "5": "Hit"},
+        "4": {"0": "Hit",    "1": "Hit",    "2": "Hit",    "3": "Hit",    "4": "Hit",    "5": "Hit"},
+        "5": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "6": {"0": "Double", "1": "Double", "2": "Double", "3": "Double", "4": "Double", "5": "Double"},
+        "7": {"0": "Hit",    "1": "Hit",    "2": "Hit",    "3": "Hit",    "4": "Hit",    "5": "Hit"},
+        "8": {"0": "Hit",    "1": "Hit",    "2": "Hit",    "3": "Hit",    "4": "Hit",    "5": "Hit"},
+        "9": {"0": "Hit",    "1": "Hit",    "2": "Hit",    "3": "Hit",    "4": "Hit",    "5": "Hit"},
+        "T": {"0": "Hit",    "1": "Hit",    "2": "Hit",    "3": "Hit",    "4": "Hit",    "5": "Hit"},
+        "A": {"0": "Hit",    "1": "Hit",    "2": "Hit",    "3": "Hit",    "4": "Hit",    "5": "Hit"}
+    },
+    "66": {
+        "2": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "3": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "4": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "5": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "6": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "7": {"0": "Hit",   "1": "Hit",   "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "8": {"0": "Hit",   "1": "Hit",   "2": "Hit",   "3": "Hit",   "4": "Hit",   "5": "Hit"},
+        "9": {"0": "Hit",   "1": "Hit",   "2": "Hit",   "3": "Hit",   "4": "Hit",   "5": "Hit"},
+        "T": {"0": "Hit",   "1": "Hit",   "2": "Hit",   "3": "Hit",   "4": "Hit",   "5": "Hit"},
+        "A": {"0": "Hit",   "1": "Hit",   "2": "Hit",   "3": "Hit",   "4": "Hit",   "5": "Hit"}
+    },
+    "77": {
+        "2": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "3": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "4": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "5": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "6": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "7": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "8": {"0": "Hit",   "1": "Hit",   "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "9": {"0": "Hit",   "1": "Hit",   "2": "Hit",   "3": "Hit",   "4": "Hit",   "5": "Hit"},
+        "T": {"0": "Hit",   "1": "Hit",   "2": "Hit",   "3": "Hit",   "4": "Hit",   "5": "Hit"},
+        "A": {"0": "Hit",   "1": "Hit",   "2": "Hit",   "3": "Hit",   "4": "Hit",   "5": "Hit"}
+    },
+    "99": {
+        "2": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "3": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "4": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "5": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "6": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "7": {"0": "Stand", "1": "Stand", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "8": {"0": "Split", "1": "Split", "2": "Split", "3": "Split", "4": "Split", "5": "Split"},
+        "9": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "T": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
+        "A": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"}
+    }
+    }
 
 // Пример для руки 9 (можешь удалить после вставки полного словаря)
 Object.assign(decision_data, {
