@@ -4,25 +4,26 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Blackjack Helper — Wong Halves</title>
-  <link rel="stylesheet" href="styles.css" />
   <meta name="description" content="Blackjack Helper — калькулятор решений и тренажёр счёта Wong Halves для блэкджека. 18+." />
   <link rel="canonical" href="/" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app">
     <header class="topbar">
       <div class="brand">🧠 Blackjack Helper — Wong Halves</div>
       <nav class="actions">
-        <a class="btn ghost" href="/demo">Demo</a>
-        <a class="btn ghost" href="https://t.me/ТВОЙ_БОТ" target="_blank" rel="noopener">Telegram-бот</a>
-        <a class="btn ghost" href="/checkout">Купить</a>
+        <a class="btn primary" href="/checkout">Купить подписку</a>
       </nav>
     </header>
 
     <main class="grid-2">
       <!-- ЛЕВАЯ КОЛОНКА: СЧЁТ -->
       <section class="card fill">
-        <h2>🂠 Счёт карт</h2>
+        <div class="head-row">
+          <h2>🂠 Счёт карт</h2>
+          <span id="demo-chip" class="chip">Демо: 0 / 100</span>
+        </div>
         <div class="grid buttons">
           <button type="button" data-group="2 / 7">2 / 7</button>
           <button type="button" data-group="3 / 4 / 6">3 / 4 / 6</button>
@@ -68,7 +69,25 @@
     </footer>
   </div>
 
+  <!-- ПЕЙВОЛЛ -->
+  <div id="paywall" class="overlay hidden" aria-hidden="true">
+    <div class="modal">
+      <h3>Демо-лимит исчерпан</h3>
+      <p>Вы использовали 100 действий демо. Оформите подписку, чтобы продолжить без ограничений.</p>
+      <div class="row" style="flex-wrap:wrap;gap:8px">
+        <a class="btn primary" href="/checkout">💳 Оформить подписку</a>
+        <button id="have-key" class="btn" type="button">У меня есть ключ</button>
+        <button id="close-paywall" class="btn ghost" type="button">Позже</button>
+      </div>
+      <div id="key-block" class="key-block hidden">
+        <input id="key-input" placeholder="Введите ключ доступа" />
+        <button id="apply-key" class="btn primary" type="button">Активировать</button>
+        <div id="key-msg" class="muted"></div>
+      </div>
+      <small class="muted">После оплаты вы получите ключ доступа на e-mail.</small>
+    </div>
+  </div>
+
   <script type="module" src="src/main.js"></script>
 </body>
 </html>
-
