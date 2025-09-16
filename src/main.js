@@ -345,7 +345,6 @@ function renderState(){
 📈 True Count: ${trueCount}
 ${edgeMsg}
 `;
-
 }
 
 document.querySelectorAll('[data-group]').forEach(btn=>{
