@@ -57,6 +57,18 @@ const stateEl = document.getElementById('state');
 const decisionEl = document.getElementById('decision');
 
 const data = { count: 0, cards_entered: 0, aces_count: 0, history: [] };
+// после const data = { ... };
+setDemoClicks(getDemoClicks());
+if (isSubscribed()) {
+  disableControls(false);
+  const chip = document.getElementById('demo-chip');
+  if (chip) chip.textContent = 'Подписка активна';
+} else {
+  // если демо уже исчерпано — сразу показать пейволл
+  if (getDemoClicks() >= DEMO_LIMIT) {
+    showPaywall();
+  }
+}
 
 // TODO: Вставь сюда твой полный decision_data из бота
 const decision_data = {
@@ -337,6 +349,14 @@ ${edgeText(tc)}`;
 
 document.querySelectorAll('[data-group]').forEach(btn=>{
   btn.addEventListener('click', ()=>{
+    if (!isSubscribed()) {
+      const clicks = getDemoClicks() + 1;
+      setDemoClicks(clicks);
+      if (clicks > DEMO_LIMIT) {
+        showPaywall();
+        return;
+      }
+    }
     const g = btn.getAttribute('data-group');
     if (g==='A') data.aces_count += 1;
     else data.count += groupValues[g] || 0;
@@ -345,6 +365,7 @@ document.querySelectorAll('[data-group]').forEach(btn=>{
     renderState();
   });
 });
+
 
 document.getElementById('undo').addEventListener('click', ()=>{
   const last = data.history.pop();
