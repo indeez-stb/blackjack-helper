@@ -504,3 +504,38 @@ ${action ? '✅ Recommended Action: '+action : '❌ No data for this hand yet.'}
 });
 
 renderState();
+// автофокус на поле руки
+const handInput = document.querySelector('input[name="hand"]');
+handInput?.focus();
+
+// пейволл — действия
+const haveKeyBtn = document.getElementById('have-key');
+const keyBlock = document.getElementById('key-block');
+const keyInput = document.getElementById('key-input');
+const applyKeyBtn = document.getElementById('apply-key');
+const keyMsg = document.getElementById('key-msg');
+const closePaywallBtn = document.getElementById('close-paywall');
+
+haveKeyBtn?.addEventListener('click', ()=>{
+  keyBlock?.classList.remove('hidden');
+  keyInput?.focus();
+});
+closePaywallBtn?.addEventListener('click', ()=> hidePaywall());
+
+// ВРЕМЕННЫЙ ПРОСТОЙ ЧЕК КЛЮЧА (замени на реальную проверку после оплаты)
+const VALID_KEY = 'BJ-HELPER-2025'; // TODO: после интеграции оплаты — генерируй/валидируй на сервере
+applyKeyBtn?.addEventListener('click', ()=>{
+  const val = (keyInput?.value || '').trim();
+  if (!val) return;
+  if (val === VALID_KEY) {
+    localStorage.setItem(STORAGE_KEYS.subActive,'1');
+    keyMsg.textContent = 'Подписка активирована ✔';
+    // снимаем блокировки
+    hidePaywall();
+    disableControls(false);
+    const chip = document.getElementById('demo-chip');
+    if (chip) chip.textContent = 'Подписка активна';
+  } else {
+    keyMsg.textContent = 'Неверный ключ. Проверьте письмо после оплаты.';
+  }
+});
