@@ -52,4 +52,21 @@ pre{white-space:pre-wrap;border:1px solid #1f2937;background:#0b1220;border-radi
   .grid-2{grid-template-columns:1fr;overflow:auto}
   .fields{grid-template-columns:1fr}
 }
+.footer {
+  background: #111827;
+  border-top: 1px solid #1f2937;
+  padding: 12px 16px;
+  text-align: center;
+}
+.footer-content a {
+  color: #93c5fd;
+  text-decoration: none;
+  margin: 0 6px;
+}
+.footer-content a:hover { text-decoration: underline; }
+.footer-content p {
+  margin: 6px 0 0 0;
+  font-size: 12px;
+  color: #9ca3af;
+}
 
