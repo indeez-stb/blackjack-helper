@@ -335,17 +335,24 @@ function round(x,n=2){ return Math.round(x*10**n)/10**n; }
 function getTrueCount(){ return round(data.count / getRemainingDecks(), 2); }
 function edgeText(tc){ return tc<=0 ? "⚠️ Low count — minimum or skip the hand" : `📈 Edge: ${round(tc*0.5,2)}%`; }
 
-function renderState(){
-  const remainingDecks = round(getRemainingDecks(),2);
-  const tc = getTrueCount();
+function renderState() {
+  const TOTAL_DECKS = 8;
+  const TOTAL_CARDS = TOTAL_DECKS * 52;
+  const TOTAL_ACES = TOTAL_DECKS * 4;
+
+  const remainingDecks = Math.max((TOTAL_CARDS - data.cards_entered) / 52, 1);
+  const trueCount = (data.count / remainingDecks).toFixed(2);
+  const edgeMsg = getEdge(trueCount);
+
   stateEl.textContent = `
 🂠 Cards seen: ${data.cards_entered} / ${TOTAL_CARDS}
 🂱 Aces seen: ${data.aces_count} / ${TOTAL_ACES}
-📉 Decks remaining: ${remainingDecks}
+📉 Decks remaining: ${remainingDecks.toFixed(2)}
 📈 True Count: ${trueCount}
 ${edgeMsg}
-`;
+  `;
 }
+
 
 document.querySelectorAll('[data-group]').forEach(btn=>{
   btn.addEventListener('click', ()=>{
