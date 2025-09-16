@@ -1,90 +1,55 @@
-/* ====== базовое ====== */
+/* базовое */
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
-  margin:0;
-  background:#0f172a; /* slate-900 */
-  color:#e2e8f0;      /* slate-200 */
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  line-height:1.35;
+  margin:0; background:#0f172a; color:#e2e8f0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; line-height:1.35;
 }
 
-/* ====== каркас 100vh без прокрутки страницы ====== */
-.app{
-  min-height:100vh;
-  display:grid;
-  grid-template-rows: auto 1fr auto; /* шапка, контент, футер */
-  overflow:hidden; /* скрываем прокрутку документа */
-}
+/* каркас */
+.app{min-height:100vh; display:grid; grid-template-rows:auto 1fr auto; overflow:hidden}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;border-bottom:1px solid #1f2937;background:linear-gradient(180deg,#0f172a,#0b1220)}
+.brand{font-weight:600;white-space:nowrap}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.grid-2{display:grid;gap:12px;grid-template-columns:1fr 1fr;padding:12px 16px;overflow:hidden}
+.card{background:#111827;border:1px solid #1f2937;border-radius:16px;padding:12px;min-height:0;display:flex;flex-direction:column;gap:10px}
+.card.fill{height:100%;overflow:hidden}
+h2{font-size:18px;margin:0 0 2px}
 
-/* ====== шапка ====== */
-.topbar{
-  display:flex; align-items:center; justify-content:space-between;
-  gap:12px; padding:10px 16px;
-  border-bottom:1px solid #1f2937; /* slate-800 */
-  background:linear-gradient(180deg,#0f172a,#0b1220);
-}
-.brand{font-weight:600; white-space:nowrap}
-.actions{display:flex; gap:8px; flex-wrap:wrap}
-
-/* ====== сетка контента ====== */
-.grid-2{
-  display:grid; gap:12px;
-  grid-template-columns: 1fr 1fr; /* две колонки */
-  padding:12px 16px;
-  overflow:hidden; /* сетка занимает всё доступное без прокрутки */
-}
-
-/* ====== карточки, заполняющие колонку ====== */
-.card{
-  background:#111827; border:1px solid #1f2937;
-  border-radius:16px; padding:12px; min-height:0;
-  display:flex; flex-direction:column; gap:10px;
-}
-.card.fill{ /* растянуть по высоте колонки */
-  height:100%; overflow:hidden;
-}
-
-h2{font-size:18px; margin:0 0 2px}
-
-/* ====== сетка кнопок карт ====== */
-.grid.buttons{
-  display:grid; gap:8px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-/* ====== элементы управления ====== */
-button, .btn, input{
-  font:inherit; color:#e2e8f0;
-  border:1px solid #334155; background:#0b1220;
-  border-radius:10px; padding:10px 12px;
-}
+/* кнопки/поля */
+button,.btn,input{font:inherit;color:#e2e8f0;border:1px solid #334155;background:#0b1220;border-radius:10px;padding:10px 12px}
 button,.btn{cursor:pointer}
 button:hover,.btn:hover{background:#111c33}
 .btn.ghost{background:transparent}
-.btn.primary{background:#0b1220; border-color:#475569; font-weight:600}
-
-/* ====== строки, поля ====== */
-.row{display:flex; gap:8px}
+.btn.primary{background:#0b1220;border-color:#475569;font-weight:600}
+.row{display:flex;gap:8px}
 .row.compact{margin-top:-2px}
-.fields{display:grid; gap:8px; grid-template-columns: 1fr 140px}
+.fields{display:grid;gap:8px;grid-template-columns:1fr 140px}
 input{width:100%}
+.grid.buttons{display:grid;gap:8px;grid-template-columns:repeat(3,minmax(0,1fr))}
 
-/* ====== результаты ====== */
-pre{white-space:pre-wrap; border:1px solid #1f2937; background:#0b1220; border-radius:10px; padding:10px; margin:0}
-.state,.decision{
-  flex:1 1 auto;            /* займут доступную высоту */
-  overflow:auto;             /* внутренняя прокрутка при переполнении */
-  scrollbar-width: thin;
+/* вывод */
+pre{white-space:pre-wrap;border:1px solid #1f2937;background:#0b1220;border-radius:10px;padding:10px;margin:0}
+.state,.decision{flex:1 1 auto;overflow:auto;scrollbar-width:thin}
+.muted{opacity:.75;margin:0}
+
+/* шапка секции слева */
+.head-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.chip{background:#0b1220;border:1px solid #334155;border-radius:999px;padding:6px 10px;font-size:12px}
+
+/* пейволл */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.overlay.hidden{display:none}
+.modal{max-width:520px;width:100%;background:#111827;border:1px solid #1f2937;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.key-block{display:flex;gap:8px;align-items:center;margin-top:6px}
+.key-block.hidden{display:none}
+
+/* футер */
+.foot{border-top:1px solid #1f2937;padding:8px 16px;text-align:center;background:#0f172a}
+
+/* адаптив */
+@media (max-width:960px){
+  .grid-2{grid-template-columns:1fr;overflow:auto}
+  .fields{grid-template-columns:1fr}
 }
 
-/* ====== мелочи ====== */
-.muted{opacity:.75; margin:0}
-.tips summary{cursor:pointer; opacity:.9}
-.foot{border-top:1px solid #1f2937; padding:8px 16px; text-align:center; background:#0f172a}
-
-/* ====== адаптив для узких экранов ====== */
-@media (max-width: 960px){
-  .grid-2{grid-template-columns: 1fr; overflow:auto} /* на мобильных допускаем прокрутку */
-  .fields{grid-template-columns: 1fr}
-}
