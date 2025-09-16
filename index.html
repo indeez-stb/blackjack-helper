@@ -5,43 +5,70 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Blackjack Helper — Wong Halves</title>
   <link rel="stylesheet" href="styles.css" />
+  <meta name="description" content="Blackjack Helper — калькулятор решений и тренажёр счёта Wong Halves для блэкджека. 18+." />
+  <link rel="canonical" href="/" />
 </head>
 <body>
-  <main class="wrap">
-    <h1>🧠 Blackjack Helper — Wong Halves</h1>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">🧠 Blackjack Helper — Wong Halves</div>
+      <nav class="actions">
+        <a class="btn ghost" href="/demo">Demo</a>
+        <a class="btn ghost" href="https://t.me/ТВОЙ_БОТ" target="_blank" rel="noopener">Telegram-бот</a>
+        <a class="btn ghost" href="/checkout">Купить</a>
+      </nav>
+    </header>
 
-    <section class="card">
-      <h2>🂠 Ввод карт для счёта</h2>
-      <div class="grid">
-        <button data-group="2 / 7">2 / 7</button>
-        <button data-group="3 / 4 / 6">3 / 4 / 6</button>
-        <button data-group="5">5</button>
-        <button data-group="8">8</button>
-        <button data-group="9">9</button>
-        <button data-group="10 / J / Q / K">10 / J / Q / K</button>
-        <button data-group="A">A</button>
-      </div>
-      <div class="row">
-        <button id="undo">🔙 Undo</button>
-        <button id="reset">♻️ Reset</button>
-      </div>
-      <pre id="state"></pre>
-    </section>
+    <main class="grid-2">
+      <!-- ЛЕВАЯ КОЛОНКА: СЧЁТ -->
+      <section class="card fill">
+        <h2>🂠 Счёт карт</h2>
+        <div class="grid buttons">
+          <button type="button" data-group="2 / 7">2 / 7</button>
+          <button type="button" data-group="3 / 4 / 6">3 / 4 / 6</button>
+          <button type="button" data-group="5">5</button>
+          <button type="button" data-group="8">8</button>
+          <button type="button" data-group="9">9</button>
+          <button type="button" data-group="10 / J / Q / K">10 / J / Q / K</button>
+          <button type="button" data-group="A">A</button>
+        </div>
+        <div class="row compact">
+          <button type="button" id="undo">🔙 Undo</button>
+          <button type="button" id="reset">♻️ Reset</button>
+        </div>
+        <pre id="state" class="state"></pre>
+        <p class="muted">18+. Инструмент для обучения/развлечения. Не гарантирует выигрыш.</p>
+      </section>
 
-    <section class="card">
-      <h2>🧠 Decision Helper</h2>
-      <form id="decision-form">
-        <input name="hand" placeholder="Рука игрока (например, 13-7, A4, 88, 10+10, 9-A)" required />
-        <input name="dealer" placeholder="Карта дилера (2–A)" required />
-        <button type="submit">Рассчитать</button>
-      </form>
-      <pre id="decision"></pre>
-    </section>
+      <!-- ПРАВАЯ КОЛОНКА: DECISION -->
+      <section class="card fill">
+        <h2>🧠 Decision Helper</h2>
+        <form id="decision-form" class="form">
+          <div class="fields">
+            <input name="hand" placeholder="Рука: 13-7, A4, 88, 10+10, 9-A" required />
+            <input name="dealer" placeholder="Карта дилера (2–A)" required />
+          </div>
+          <button class="btn primary" type="submit">Рассчитать</button>
+        </form>
+        <pre id="decision" class="decision"></pre>
 
-    <footer>
-      <small>18+. Инструмент для обучения/развлечения, не гарантирует выигрыш.</small>
+        <details class="tips">
+          <summary>Подсказки ввода</summary>
+          <ul>
+            <li>Пары: <code>88</code>, <code>10+10</code>, <code>1010</code></li>
+            <li>Софт: <code>A4</code> или <code>4A</code></li>
+            <li>Хард: <code>13-7</code>, <code>9-A</code></li>
+          </ul>
+        </details>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <small>© bj-helper · <a href="/terms">Terms</a> · <a href="/privacy">Privacy</a></small>
     </footer>
-  </main>
+  </div>
+
   <script type="module" src="src/main.js"></script>
 </body>
 </html>
+
