@@ -320,46 +320,79 @@ document.getElementById('reset').addEventListener('click', ()=>{
 });
 
 function parseHandInput(textHand, textDealer){
-  const clean = s=> s.trim().toLowerCase().replace(/\s+/g,'');
+  const clean = s => (s || '').trim().toLowerCase().replace(/\s+/g,'');
   const t = clean(textHand);
-  let dealer = (textDealer||'').trim().toUpperCase().replace(/10|J|Q|K/g,'T');
+  let dealer = clean(textDealer).toUpperCase().replace(/10|j|q|k/gi,'T');
 
+  // 1) Делим только для анализа
   let parts;
   if (t.includes('-')) parts = t.split('-');
   else if (t.includes('+')) parts = t.split('+');
-  else parts = t.match(/[0-9]+|[ajqk]/g);
+  else parts = t.match(/[0-9]+|[ajqk]/gi) || [];
 
-  if (!parts || parts.length<1) return [null,null,null];
-  if (!dealer && parts.length>=2) dealer = parts[1].toUpperCase().replace(/10|J|Q|K/g,'T');
-
-  const player_raw = parts[0];
-
-  if (t.includes('+')){
-    const [l,r]=parts; if (l!==r) return [null,null,null];
-    let val=l; if (['j','q','k'].includes(val)) val='10';
-    if (val==='1') return ['11', dealer, 'hard'];
-    return [(val+val).toUpperCase(), dealer, 'pair'];
+  // Если дилер не указан отдельным полем и формат "13-7" — возьмём вторую часть
+  if (!dealer && t.includes('-') && parts.length >= 2) {
+    dealer = parts[1].toUpperCase().replace(/10|J|Q|K/g,'T');
   }
 
-  if ([2,4].includes(player_raw.length)){
-    const half=player_raw.length/2;
-    if (player_raw.slice(0,half)===player_raw.slice(half)){
-      if (player_raw==='11') return ['11', dealer, 'hard'];
-      if (['jj','qq','kk'].includes(player_raw)) return ['1010', dealer, 'pair'];
-      return [player_raw.toUpperCase(), dealer, 'pair'];
+  // 2) ПАРЫ: "10+10", "88", "1010", "a+a" (но AA — это тоже пара)
+  if (t.includes('+')) {
+    const [l, r] = parts;
+    if (!l || !r || l !== r) return [null,null,null];
+    let val = l;
+    if (/^[jqk]$/i.test(val)) val = '10';
+    if (val === '1') return ['11', dealer, 'hard']; // защита 1+1
+    return [(val + val).toUpperCase(), dealer, 'pair'];
+  }
+  // Пара вида "88" или "1010" (кроме 11)
+  if (parts.length === 1) {
+    const token = parts[0];
+    if (token && (token.length === 2 || token.length === 4)) {
+      const half = token.length / 2;
+      if (token.slice(0,half) === token.slice(half)) {
+        if (token === '11') return ['11', dealer, 'hard'];
+        if (token === 'jj' || token === 'qq' || token === 'kk') return ['1010', dealer, 'pair'];
+        return [token.toUpperCase(), dealer, 'pair'];
+      }
     }
   }
 
-  if (player_raw.includes('a')){
-    const other = player_raw.replace(/a/g,'');
-    if (other==='') return ['A1', dealer, 'soft'];
-    if (/^\d+$/.test(other)) return ['A'+other, dealer, 'soft'];
-    return [null,null,null];
+  // 3) СОФТЫ:
+  //   варианты: "a4", "4a", "A4", "4A" (в т.ч. когда regex отдал два токена)
+  //   - один токен 'a4' или '4a'
+  //   - два токена ['a','4'] или ['4','a']
+  const isSoftOneToken = parts.length === 1 && /^(a\d+|\d+a)$/i.test(parts[0]);
+  const isSoftTwoTokens = parts.length >= 2 && (
+    (parts[0] === 'a' && /^\d+$/.test(parts[1])) ||
+    (parts[1] === 'a' && /^\d+$/.test(parts[0]))
+  );
+
+  if (isSoftOneToken || isSoftTwoTokens) {
+    let num;
+    if (isSoftOneToken) {
+      const tok = parts[0];
+      num = tok.replace(/a/ig,''); // 'a4' -> '4', '4a' -> '4'
+    } else {
+      num = parts[0] === 'a' ? parts[1] : parts[0];
+    }
+    if (!num) return ['A1', dealer, 'soft']; // одиночный туз
+    if (!/^\d+$/.test(num)) return [null,null,null];
+    return ['A' + String(parseInt(num,10)), dealer, 'soft'];
   }
 
-  if (/^\d+$/.test(player_raw)) return [player_raw, dealer, 'hard'];
+  // 4) ХАРД:
+  //   - "13-7" (уже обработали дилера выше)
+  //   - одиночное число "12" и т.д.
+  if (t.includes('-') && parts.length >= 1 && /^\d+$/.test(parts[0])) {
+    return [parts[0], dealer, 'hard'];
+  }
+  if (parts.length >= 1 && /^\d+$/.test(parts[0])) {
+    return [parts[0], dealer, 'hard'];
+  }
+
   return [null,null,null];
 }
+
 
 function fixedPairDecision(player, type){
   if (type!=='pair') return null;
