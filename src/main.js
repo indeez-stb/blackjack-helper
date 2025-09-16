@@ -1,50 +1,3 @@
-/**************
- * Blackjack Helper — счет, демо-лимит, Undo / Reset / Restore
- **************/
-
-/* === Константы стола === */
-const TOTAL_DECKS = 8;
-const TOTAL_CARDS = TOTAL_DECKS * 52;
-const TOTAL_ACES  = TOTAL_DECKS * 4;
-
-/* === Утилиты === */
-function round(x, n = 2){ return Math.round(x * 10**n) / 10**n; }
-function getRemainingDecks(){ return Math.max((TOTAL_CARDS - data.cards_entered) / 52, 1); }
-function getTrueCount(){ return round(data.count / getRemainingDecks(), 2); }
-function edgeText(tc){
-  return tc <= 0
-    ? "⚠️ Low count — minimum or skip the hand"
-    : `📈 Edge: ${round(tc * 0.5, 2)}%`;
-}
-
-/* === DOM-элементы === */
-const stateEl = document.getElementById('state');
-
-/* === Значения групп карт (на случай, если не объявлены где-то выше) === */
-if (typeof groupValues === 'undefined') {
-  window.groupValues = {
-    '2 / 7': 0.5,
-    '3 / 4 / 6': 1,
-    '5': 1.5,
-    '8': 0,
-    '9': -0.5,
-    '10 / J / Q / K': -1,
-    'A': 0
-  };
-}
-
-/* === Состояние === */
-let data = {
-  count: 0,
-  cards_entered: 0,
-  aces_count: 0,
-  history: []
-};
-
-// снимок для восстановления после Сброса
-let lastState = null;
-
-/* === Демо-лимит / подписка === */
 const DEMO_LIMIT = 100;
 const STORAGE_KEYS = {
   demoClicks: 'bh_demo_clicks',
@@ -52,7 +5,6 @@ const STORAGE_KEYS = {
 };
 
 function isSubscribed(){
-  // Поддержка тестового параметра ?sub=1
   const url = new URL(location.href);
   if (url.searchParams.get('sub') === '1') {
     localStorage.setItem(STORAGE_KEYS.subActive,'1');
@@ -60,27 +12,29 @@ function isSubscribed(){
   }
   return localStorage.getItem(STORAGE_KEYS.subActive) === '1';
 }
+
 function getDemoClicks(){
   return parseInt(localStorage.getItem(STORAGE_KEYS.demoClicks) || '0', 10);
 }
+
 function setDemoClicks(v){
   localStorage.setItem(STORAGE_KEYS.demoClicks, String(v));
   const chip = document.getElementById('demo-chip');
-  if (!chip) return;
-  if (isSubscribed()) chip.textContent = 'Подписка активна';
-  else chip.textContent = `Демо: ${Math.min(v,DEMO_LIMIT)} / ${DEMO_LIMIT}`;
+  if (chip && !isSubscribed()) chip.textContent = `Демо: ${Math.min(v,DEMO_LIMIT)} / ${DEMO_LIMIT}`;
+  if (chip && isSubscribed()) chip.textContent = 'Подписка активна';
 }
+
 function disableControls(disabled){
-  document.querySelectorAll('[data-group],#undo,#reset,#restore').forEach(el => {
-    if (el) el.disabled = disabled;
-  });
+  document.querySelectorAll('[data-group],#undo,#reset').forEach(el => el.disabled = disabled);
 }
+
 function showPaywall(){
   const ov = document.getElementById('paywall');
   ov?.classList.remove('hidden');
   ov?.setAttribute('aria-hidden','false');
   disableControls(true);
 }
+
 function hidePaywall(){
   const ov = document.getElementById('paywall');
   ov?.classList.add('hidden');
@@ -88,126 +42,36 @@ function hidePaywall(){
   if (isSubscribed()) disableControls(false);
 }
 
-/* === Рендер состояния (без Running Count в интерфейсе) === */
-function renderState() {
-  const remainingDecks = round(getRemainingDecks(), 2);
-  const trueCount = getTrueCount();
-  const edgeMsg = edgeText(trueCount);
+const groupValues = {
+  '2 / 7': 0.5,
+  '3 / 4 / 6': 1,
+  '5': 1.5,
+  '8': 0,
+  '9': -0.5,
+  '10 / J / Q / K': -1,
+  'A': 0
+};
 
-  if (!stateEl) return;
-  stateEl.textContent = `
-🂠 Cards seen: ${data.cards_entered} / ${TOTAL_CARDS}
-🂱 Aces seen: ${data.aces_count} / ${TOTAL_ACES}
-📉 Decks remaining: ${remainingDecks}
-📈 True Count: ${trueCount}
-${edgeMsg}
-  `;
-}
+const TOTAL_DECKS = 8;
+const TOTAL_CARDS = TOTAL_DECKS * 52;
+const TOTAL_ACES = TOTAL_DECKS * 4;
 
-/* === Инициализация демо-чипа и возможного пейволла === */
+const stateEl = document.getElementById('state');
+const decisionEl = document.getElementById('decision');
+
+const data = { count: 0, cards_entered: 0, aces_count: 0, history: [] };
+
 setDemoClicks(getDemoClicks());
 if (isSubscribed()) {
   disableControls(false);
   const chip = document.getElementById('demo-chip');
   if (chip) chip.textContent = 'Подписка активна';
 } else {
-  if (getDemoClicks() >= DEMO_LIMIT) showPaywall();
+  if (getDemoClicks() >= DEMO_LIMIT) {
+    showPaywall();
+  }
 }
 
-/* === Обработчики кликов по кнопкам групп карт === */
-document.querySelectorAll('[data-group]').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    if (!isSubscribed()) {
-      const clicks = getDemoClicks() + 1;
-      setDemoClicks(clicks);
-      if (clicks > DEMO_LIMIT) {
-        showPaywall();
-        return;
-      }
-    }
-    const g = btn.getAttribute('data-group');
-    if (g === 'A') data.aces_count += 1;
-    else data.count += groupValues[g] || 0;
-
-    data.cards_entered += 1;
-    data.history.push(g);
-    renderState();
-  });
-});
-
-/* === Undo === */
-const undoBtn = document.getElementById('undo');
-undoBtn?.addEventListener('click', ()=>{
-  if (!isSubscribed() && getDemoClicks() > DEMO_LIMIT) return;
-  const last = data.history.pop();
-  if (!last) return;
-  if (last === 'A') data.aces_count -= 1;
-  else data.count -= groupValues[last] || 0;
-  data.cards_entered -= 1;
-  renderState();
-});
-
-/* === Reset (с сохранением снимка для восстановления) === */
-const resetBtn = document.getElementById('reset');
-resetBtn?.addEventListener('click', ()=>{
-  if (!isSubscribed() && getDemoClicks() > DEMO_LIMIT) return;
-
-  // сохраняем снимок перед очисткой
-  lastState = { ...data, history: [...data.history] };
-
-  data.count = 0;
-  data.cards_entered = 0;
-  data.aces_count = 0;
-  data.history = [];
-  renderState();
-});
-
-/* === Restore (откат последнего сброса) === */
-const restoreBtn = document.getElementById('restore');
-restoreBtn?.addEventListener('click', ()=>{
-  if (!lastState) return;
-  // восстанавливаем глубокую копию
-  data = { ...lastState, history: [...lastState.history] };
-  renderState();
-  // очищаем снимок, чтобы нельзя было «накручивать»
-  lastState = null;
-});
-
-/* === Paywall: «есть ключ», «активировать», «позже» (если используешь) === */
-const haveKeyBtn = document.getElementById('have-key');
-const keyBlock   = document.getElementById('key-block');
-const keyInput   = document.getElementById('key-input');
-const applyKeyBtn= document.getElementById('apply-key');
-const keyMsg     = document.getElementById('key-msg');
-const closePaywallBtn = document.getElementById('close-paywall');
-
-haveKeyBtn?.addEventListener('click', ()=>{
-  keyBlock?.classList.remove('hidden');
-  keyInput?.focus();
-});
-closePaywallBtn?.addEventListener('click', ()=> hidePaywall());
-
-// Временная локальная активация (замени на серверную проверку позже)
-const VALID_KEY = 'BJ-HELPER-2025';
-applyKeyBtn?.addEventListener('click', ()=>{
-  const val = (keyInput?.value || '').trim();
-  if (!val) return;
-  if (val === VALID_KEY) {
-    localStorage.setItem(STORAGE_KEYS.subActive,'1');
-    keyMsg.textContent = 'Подписка активирована ✔';
-    hidePaywall();
-    disableControls(false);
-    const chip = document.getElementById('demo-chip');
-    if (chip) chip.textContent = 'Подписка активна';
-  } else {
-    keyMsg.textContent = 'Неверный ключ. Проверьте письмо после оплаты.';
-  }
-});
-
-/* === Первый рендер === */
-renderState();
-
-// TODO: Вставь сюда твой полный decision_data из бота
 const decision_data = {
     "9": {
         "2": {"0": "Hit", "1": "Hit", "2": "Hit", "3": "Double", "4": "Double", "5": "Double"},
@@ -449,203 +313,194 @@ const decision_data = {
         "T": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"},
         "A": {"0": "Stand", "1": "Stand", "2": "Stand", "3": "Stand", "4": "Stand", "5": "Stand"}
     }
-    }
+};
 
-// Пример для руки 9 (можешь удалить после вставки полного словаря)
-Object.assign(decision_data, {
-  "9": {
-    "2": {"0":"Hit","1":"Hit","2":"Hit","3":"Double","4":"Double","5":"Double"},
-    "3": {"0":"Hit","1":"Double","2":"Double","3":"Double","4":"Double","5":"Double"},
-    "4": {"0":"Double","1":"Double","2":"Double","3":"Double","4":"Double","5":"Double"},
-    "5": {"0":"Double","1":"Double","2":"Double","3":"Double","4":"Double","5":"Double"},
-    "6": {"0":"Double","1":"Double","2":"Double","3":"Double","4":"Double","5":"Double"},
-    "7": {"0":"Hit","1":"Double","2":"Double","3":"Double","4":"Double","5":"Double"},
-    "8": {"0":"Hit","1":"Hit","2":"Hit","3":"Double","4":"Double","5":"Double"},
-    "9": {"0":"Hit","1":"Hit","2":"Hit","3":"Hit","4":"Hit","5":"Hit"},
-    "T": {"0":"Hit","1":"Hit","2":"Hit","3":"Hit","4":"Hit","5":"Hit"},
-    "A": {"0":"Hit","1":"Hit","2":"Hit","3":"Hit","4":"Hit","5":"Hit"}
-  }
-});
-
-function getRemainingDecks(){ return Math.max((TOTAL_CARDS - data.cards_entered)/52, 1); }
-function round(x,n=2){ return Math.round(x*10**n)/10**n; }
-function getTrueCount(){ return round(data.count / getRemainingDecks(), 2); }
-function edgeText(tc){ return tc<=0 ? "⚠️ Low count — minimum or skip the hand" : `📈 Edge: ${round(tc*0.5,2)}%`; }
-
-function renderState(){
-  const remainingDecks = round(getRemainingDecks(),2);
-  const tc = getTrueCount();
-  stateEl.textContent =
-`📊 Running Count: ${round(data.count,2)}
-🂠 Cards played: ${data.cards_entered} / ${TOTAL_CARDS}
-🂱 Aces played: ${data.aces_count} / ${TOTAL_ACES}
-📉 Remaining decks: ${remainingDecks}
-📈 True Count: ${tc}
-${edgeText(tc)}`;
+function getRemainingDecks(){ 
+    return Math.max((TOTAL_CARDS - data.cards_entered) / 52, 1); 
 }
 
-document.querySelectorAll('[data-group]').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    if (!isSubscribed()) {
-      const clicks = getDemoClicks() + 1;
-      setDemoClicks(clicks);
-      if (clicks > DEMO_LIMIT) {
-        showPaywall();
-        return;
-      }
-    }
-    const g = btn.getAttribute('data-group');
-    if (g==='A') data.aces_count += 1;
-    else data.count += groupValues[g] || 0;
-    data.cards_entered += 1;
-    data.history.push(g);
+function round(x, n = 2){ 
+    return Math.round(x * 10**n) / 10**n; 
+}
+
+function getTrueCount(){ 
+    return round(data.count / getRemainingDecks(), 2); 
+}
+
+function edgeText(tc){
+    return tc <= 0 
+        ? "⚠️ Low count — minimum or skip the hand" 
+        : `📈 Edge: ${round(tc * 0.5, 2)}%`;
+}
+
+function renderState() {
+    const remainingDecks = round(getRemainingDecks(), 2);
+    const trueCount = getTrueCount();
+    const edgeMsg = edgeText(trueCount);
+
+    if (!stateEl) return;
+    stateEl.textContent = `
+🂠 Cards seen: ${data.cards_entered} / ${TOTAL_CARDS}
+🂱 Aces seen: ${data.aces_count} / ${TOTAL_ACES}
+📉 Decks remaining: ${remainingDecks}
+📈 True Count: ${trueCount}
+${edgeMsg}
+    `;
+}
+
+document.querySelectorAll('[data-group]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (!isSubscribed()) {
+            const clicks = getDemoClicks() + 1;
+            setDemoClicks(clicks);
+            if (clicks > DEMO_LIMIT) {
+                showPaywall();
+                return;
+            }
+        }
+        const g = btn.getAttribute('data-group');
+        if (g === 'A') data.aces_count += 1;
+        else data.count += groupValues[g] || 0;
+
+        data.cards_entered += 1;
+        data.history.push(g);
+        renderState();
+    });
+});
+
+document.getElementById('undo')?.addEventListener('click', () => {
+    if (!isSubscribed() && getDemoClicks() > DEMO_LIMIT) return;
+    const last = data.history.pop();
+    if (!last) return;
+    if (last === 'A') data.aces_count -= 1;
+    else data.count -= groupValues[last] || 0;
+    data.cards_entered -= 1;
     renderState();
-  });
 });
 
-
-document.getElementById('undo').addEventListener('click', ()=>{
-  if (!isSubscribed() && getDemoClicks() > DEMO_LIMIT) return;
-  const last = data.history.pop();
-  if (!last) return;
-  if (last==='A') data.aces_count -= 1;
-  else data.count -= groupValues[last] || 0;
-  data.cards_entered -= 1;
-  renderState();
+document.getElementById('reset')?.addEventListener('click', () => {
+    if (!isSubscribed() && getDemoClicks() > DEMO_LIMIT) return;
+    data.count = 0;
+    data.cards_entered = 0;
+    data.aces_count = 0;
+    data.history = [];
+    renderState();
 });
-document.getElementById('reset').addEventListener('click', ()=>{
-  if (!isSubscribed() && getDemoClicks() > DEMO_LIMIT) return;
-  data.count = 0; data.cards_entered = 0; data.aces_count = 0; data.history = [];
-  renderState();
-});
-
 
 function parseHandInput(textHand, textDealer){
-  const clean = s => (s || '').trim().toLowerCase().replace(/\s+/g,'');
-  const t = clean(textHand);
-  let dealer = clean(textDealer).toUpperCase().replace(/10|j|q|k/gi,'T');
+    const clean = s => (s || '').trim().toLowerCase().replace(/\s+/g,'');
+    const t = clean(textHand);
+    let dealer = clean(textDealer).toUpperCase().replace(/10|j|q|k/gi,'T');
 
-  // 1) Делим только для анализа
-  let parts;
-  if (t.includes('-')) parts = t.split('-');
-  else if (t.includes('+')) parts = t.split('+');
-  else parts = t.match(/[0-9]+|[ajqk]/gi) || [];
+    let parts;
+    if (t.includes('-')) parts = t.split('-');
+    else if (t.includes('+')) parts = t.split('+');
+    else parts = t.match(/[0-9]+|[ajqk]/gi) || [];
 
-  // Если дилер не указан отдельным полем и формат "13-7" — возьмём вторую часть
-  if (!dealer && t.includes('-') && parts.length >= 2) {
-    dealer = parts[1].toUpperCase().replace(/10|J|Q|K/g,'T');
-  }
-
-  // 2) ПАРЫ: "10+10", "88", "1010", "a+a" (но AA — это тоже пара)
-  if (t.includes('+')) {
-    const [l, r] = parts;
-    if (!l || !r || l !== r) return [null,null,null];
-    let val = l;
-    if (/^[jqk]$/i.test(val)) val = '10';
-    if (val === '1') return ['11', dealer, 'hard']; // защита 1+1
-    return [(val + val).toUpperCase(), dealer, 'pair'];
-  }
-  // Пара вида "88" или "1010" (кроме 11)
-  if (parts.length === 1) {
-    const token = parts[0];
-    if (token && (token.length === 2 || token.length === 4)) {
-      const half = token.length / 2;
-      if (token.slice(0,half) === token.slice(half)) {
-        if (token === '11') return ['11', dealer, 'hard'];
-        if (token === 'jj' || token === 'qq' || token === 'kk') return ['1010', dealer, 'pair'];
-        return [token.toUpperCase(), dealer, 'pair'];
-      }
+    if (!dealer && t.includes('-') && parts.length >= 2) {
+        dealer = parts[1].toUpperCase().replace(/10|J|Q|K/g,'T');
     }
-  }
 
-  // 3) СОФТЫ:
-  //   варианты: "a4", "4a", "A4", "4A" (в т.ч. когда regex отдал два токена)
-  //   - один токен 'a4' или '4a'
-  //   - два токена ['a','4'] или ['4','a']
-  const isSoftOneToken = parts.length === 1 && /^(a\d+|\d+a)$/i.test(parts[0]);
-  const isSoftTwoTokens = parts.length >= 2 && (
-    (parts[0] === 'a' && /^\d+$/.test(parts[1])) ||
-    (parts[1] === 'a' && /^\d+$/.test(parts[0]))
-  );
-
-  if (isSoftOneToken || isSoftTwoTokens) {
-    let num;
-    if (isSoftOneToken) {
-      const tok = parts[0];
-      num = tok.replace(/a/ig,''); // 'a4' -> '4', '4a' -> '4'
-    } else {
-      num = parts[0] === 'a' ? parts[1] : parts[0];
+    if (t.includes('+')) {
+        const [l, r] = parts;
+        if (!l || !r || l !== r) return [null,null,null];
+        let val = l;
+        if (/^[jqk]$/i.test(val)) val = '10';
+        if (val === '1') return ['11', dealer, 'hard'];
+        return [(val + val).toUpperCase(), dealer, 'pair'];
     }
-    if (!num) return ['A1', dealer, 'soft']; // одиночный туз
-    if (!/^\d+$/.test(num)) return [null,null,null];
-    return ['A' + String(parseInt(num,10)), dealer, 'soft'];
-  }
 
-  // 4) ХАРД:
-  //   - "13-7" (уже обработали дилера выше)
-  //   - одиночное число "12" и т.д.
-  if (t.includes('-') && parts.length >= 1 && /^\d+$/.test(parts[0])) {
-    return [parts[0], dealer, 'hard'];
-  }
-  if (parts.length >= 1 && /^\d+$/.test(parts[0])) {
-    return [parts[0], dealer, 'hard'];
-  }
+    if (parts.length === 1) {
+        const token = parts[0];
+        if (token && (token.length === 2 || token.length === 4)) {
+            const half = token.length / 2;
+            if (token.slice(0,half) === token.slice(half)) {
+                if (token === '11') return ['11', dealer, 'hard'];
+                if (token === 'jj' || token === 'qq' || token === 'kk') return ['1010', dealer, 'pair'];
+                return [token.toUpperCase(), dealer, 'pair'];
+            }
+        }
+    }
 
-  return [null,null,null];
+    const isSoftOneToken = parts.length === 1 && /^(a\d+|\d+a)$/i.test(parts[0]);
+    const isSoftTwoTokens = parts.length >= 2 && (
+        (parts[0] === 'a' && /^\d+$/.test(parts[1])) ||
+        (parts[1] === 'a' && /^\d+$/.test(parts[0]))
+    );
+
+    if (isSoftOneToken || isSoftTwoTokens) {
+        let num;
+        if (isSoftOneToken) {
+            const tok = parts[0];
+            num = tok.replace(/a/ig,'');
+        } else {
+            num = parts[0] === 'a' ? parts[1] : parts[0];
+        }
+        if (!num) return ['A1', dealer, 'soft'];
+        if (!/^\d+$/.test(num)) return [null,null,null];
+        return ['A' + String(parseInt(num,10)), dealer, 'soft'];
+    }
+
+    if (t.includes('-') && parts.length >= 1 && /^\d+$/.test(parts[0])) {
+        return [parts[0], dealer, 'hard'];
+    }
+    if (parts.length >= 1 && /^\d+$/.test(parts[0])) {
+        return [parts[0], dealer, 'hard'];
+    }
+
+    return [null,null,null];
 }
 
-
 function fixedPairDecision(player, type){
-  if (type!=='pair') return null;
-  const pair = player.toUpperCase();
-  if (pair==='AA' || pair==='88') return 'Split';
-  const m = pair.match(/(10|[TJQK])(?:\1)$/); // любые две десятки/фейсы
-  if (m) return 'Stand';
-  return null;
+    if (type !== 'pair') return null;
+    const pair = player.toUpperCase();
+    if (pair === 'AA' || pair === '88') return 'Split';
+    const m = pair.match(/(10|[TJQK])(?:\1)$/);
+    if (m) return 'Stand';
+    return null;
 }
 
 function lookupDecision(player, dealer, type, trueCount){
-  const tc_key = String(Math.min(Math.max(parseInt(trueCount,10),0),5));
-  const fixed = fixedPairDecision(player, type);
-  if (fixed) return fixed;
+    const tc_key = String(Math.min(Math.max(parseInt(trueCount,10),0),5));
+    const fixed = fixedPairDecision(player, type);
+    if (fixed) return fixed;
 
-  if (type==='hard' && /^\d+$/.test(player)){
-    const v = parseInt(player,10);
-    if (v<=8) return 'Hit';
-    if (v>=17) return 'Stand';
-  }
-  const d = dealer.replace(/10|J|Q|K/g,'T');
-  if (decision_data[player] && decision_data[player][d] && decision_data[player][d][tc_key])
-    return decision_data[player][d][tc_key];
-  return null;
+    if (type === 'hard' && /^\d+$/.test(player)){
+        const v = parseInt(player,10);
+        if (v <= 8) return 'Hit';
+        if (v >= 17) return 'Stand';
+    }
+    const d = dealer.replace(/10|J|Q|K/g,'T');
+    if (decision_data[player] && decision_data[player][d] && decision_data[player][d][tc_key])
+        return decision_data[player][d][tc_key];
+    return null;
 }
 
-document.getElementById('decision-form').addEventListener('submit', (e)=>{
-  e.preventDefault();
-  const form = new FormData(e.currentTarget);
-  const hand = String(form.get('hand')||'');
-  const dealer = String(form.get('dealer')||'');
+document.getElementById('decision-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    const hand = String(form.get('hand') || '');
+    const dealer = String(form.get('dealer') || '');
 
-  const [player, d, type] = parseHandInput(hand, dealer);
-  if (!player || !d){
-    decisionEl.textContent = '❌ Неверный формат. Примеры: 13-7, A4, 88, 10+10, 9-A';
-    return;
-  }
-  const tc = getTrueCount();
-  const action = lookupDecision(player, d, type, tc);
+    const [player, d, type] = parseHandInput(hand, dealer);
+    if (!player || !d){
+        decisionEl.textContent = '❌ Неверный формат. Примеры: 13-7, A4, 88, 10+10, 9-A';
+        return;
+    }
+    const tc = getTrueCount();
+    const action = lookupDecision(player, d, type, tc);
 
-  decisionEl.textContent =
+    decisionEl.textContent =
 `🃏 Hand: ${player} vs ${d} (${type})
 📈 True Count: ${tc}
-${action ? '✅ Recommended Action: '+action : '❌ No data for this hand yet.'}`;
+${action ? '✅ Recommended Action: ' + action : '❌ No data for this hand yet.'}`;
 });
 
 renderState();
-// автофокус на поле руки
+
 const handInput = document.querySelector('input[name="hand"]');
 handInput?.focus();
 
-// пейволл — действия
 const haveKeyBtn = document.getElementById('have-key');
 const keyBlock = document.getElementById('key-block');
 const keyInput = document.getElementById('key-input');
@@ -653,26 +508,25 @@ const applyKeyBtn = document.getElementById('apply-key');
 const keyMsg = document.getElementById('key-msg');
 const closePaywallBtn = document.getElementById('close-paywall');
 
-haveKeyBtn?.addEventListener('click', ()=>{
-  keyBlock?.classList.remove('hidden');
-  keyInput?.focus();
+haveKeyBtn?.addEventListener('click', () => {
+    keyBlock?.classList.remove('hidden');
+    keyInput?.focus();
 });
-closePaywallBtn?.addEventListener('click', ()=> hidePaywall());
 
-// ВРЕМЕННЫЙ ПРОСТОЙ ЧЕК КЛЮЧА (замени на реальную проверку после оплаты)
-const VALID_KEY = 'BJ-HELPER-2025'; // TODO: после интеграции оплаты — генерируй/валидируй на сервере
-applyKeyBtn?.addEventListener('click', ()=>{
-  const val = (keyInput?.value || '').trim();
-  if (!val) return;
-  if (val === VALID_KEY) {
-    localStorage.setItem(STORAGE_KEYS.subActive,'1');
-    keyMsg.textContent = 'Подписка активирована ✔';
-    // снимаем блокировки
-    hidePaywall();
-    disableControls(false);
-    const chip = document.getElementById('demo-chip');
-    if (chip) chip.textContent = 'Подписка активна';
-  } else {
-    keyMsg.textContent = 'Неверный ключ. Проверьте письмо после оплаты.';
-  }
+closePaywallBtn?.addEventListener('click', () => hidePaywall());
+
+const VALID_KEY = 'BJ-HELPER-2025';
+applyKeyBtn?.addEventListener('click', () => {
+    const val = (keyInput?.value || '').trim();
+    if (!val) return;
+    if (val === VALID_KEY) {
+        localStorage.setItem(STORAGE_KEYS.subActive,'1');
+        keyMsg.textContent = 'Подписка активирована ✔';
+        hidePaywall();
+        disableControls(false);
+        const chip = document.getElementById('demo-chip');
+        if (chip) chip.textContent = 'Подписка активна';
+    } else {
+        keyMsg.textContent = 'Неверный ключ. Проверьте письмо после оплаты.';
+    }
 });
