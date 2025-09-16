@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Blackjack Helper — Wong Halves</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="wrap">
+    <h1>🧠 Blackjack Helper — Wong Halves</h1>
+
+    <section class="card">
+      <h2>🂠 Ввод карт для счёта</h2>
+      <div class="grid">
+        <button data-group="2 / 7">2 / 7</button>
+        <button data-group="3 / 4 / 6">3 / 4 / 6</button>
+        <button data-group="5">5</button>
+        <button data-group="8">8</button>
+        <button data-group="9">9</button>
+        <button data-group="10 / J / Q / K">10 / J / Q / K</button>
+        <button data-group="A">A</button>
+      </div>
+      <div class="row">
+        <button id="undo">🔙 Undo</button>
+        <button id="reset">♻️ Reset</button>
+      </div>
+      <pre id="state"></pre>
+    </section>
+
+    <section class="card">
+      <h2>🧠 Decision Helper</h2>
+      <form id="decision-form">
+        <input name="hand" placeholder="Рука игрока (например, 13-7, A4, 88, 10+10, 9-A)" required />
+        <input name="dealer" placeholder="Карта дилера (2–A)" required />
+        <button type="submit">Рассчитать</button>
+      </form>
+      <pre id="decision"></pre>
+    </section>
+
+    <footer>
+      <small>18+. Инструмент для обучения/развлечения, не гарантирует выигрыш.</small>
+    </footer>
+  </main>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
