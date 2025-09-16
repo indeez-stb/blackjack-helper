@@ -1,3 +1,50 @@
+/**************
+ * Blackjack Helper — счет, демо-лимит, Undo / Reset / Restore
+ **************/
+
+/* === Константы стола === */
+const TOTAL_DECKS = 8;
+const TOTAL_CARDS = TOTAL_DECKS * 52;
+const TOTAL_ACES  = TOTAL_DECKS * 4;
+
+/* === Утилиты === */
+function round(x, n = 2){ return Math.round(x * 10**n) / 10**n; }
+function getRemainingDecks(){ return Math.max((TOTAL_CARDS - data.cards_entered) / 52, 1); }
+function getTrueCount(){ return round(data.count / getRemainingDecks(), 2); }
+function edgeText(tc){
+  return tc <= 0
+    ? "⚠️ Low count — minimum or skip the hand"
+    : `📈 Edge: ${round(tc * 0.5, 2)}%`;
+}
+
+/* === DOM-элементы === */
+const stateEl = document.getElementById('state');
+
+/* === Значения групп карт (на случай, если не объявлены где-то выше) === */
+if (typeof groupValues === 'undefined') {
+  window.groupValues = {
+    '2 / 7': 0.5,
+    '3 / 4 / 6': 1,
+    '5': 1.5,
+    '8': 0,
+    '9': -0.5,
+    '10 / J / Q / K': -1,
+    'A': 0
+  };
+}
+
+/* === Состояние === */
+let data = {
+  count: 0,
+  cards_entered: 0,
+  aces_count: 0,
+  history: []
+};
+
+// снимок для восстановления после Сброса
+let lastState = null;
+
+/* === Демо-лимит / подписка === */
 const DEMO_LIMIT = 100;
 const STORAGE_KEYS = {
   demoClicks: 'bh_demo_clicks',
@@ -5,11 +52,11 @@ const STORAGE_KEYS = {
 };
 
 function isSubscribed(){
-  // подписка хранится в localStorage ('1'); также можно активировать через URL ?sub=1 для тестов
+  // Поддержка тестового параметра ?sub=1
   const url = new URL(location.href);
   if (url.searchParams.get('sub') === '1') {
     localStorage.setItem(STORAGE_KEYS.subActive,'1');
-    history.replaceState({},'',url.pathname + url.hash); // уберём ?sub=1 из адреса
+    history.replaceState({},'',url.pathname + url.hash);
   }
   return localStorage.getItem(STORAGE_KEYS.subActive) === '1';
 }
@@ -19,11 +66,14 @@ function getDemoClicks(){
 function setDemoClicks(v){
   localStorage.setItem(STORAGE_KEYS.demoClicks, String(v));
   const chip = document.getElementById('demo-chip');
-  if (chip && !isSubscribed()) chip.textContent = `Демо: ${Math.min(v,DEMO_LIMIT)} / ${DEMO_LIMIT}`;
-  if (chip && isSubscribed()) chip.textContent = 'Подписка активна';
+  if (!chip) return;
+  if (isSubscribed()) chip.textContent = 'Подписка активна';
+  else chip.textContent = `Демо: ${Math.min(v,DEMO_LIMIT)} / ${DEMO_LIMIT}`;
 }
 function disableControls(disabled){
-  document.querySelectorAll('[data-group],#undo,#reset').forEach(el => el.disabled = disabled);
+  document.querySelectorAll('[data-group],#undo,#reset,#restore').forEach(el => {
+    if (el) el.disabled = disabled;
+  });
 }
 function showPaywall(){
   const ov = document.getElementById('paywall');
@@ -38,37 +88,124 @@ function hidePaywall(){
   if (isSubscribed()) disableControls(false);
 }
 
-// Группы карт и их веса Wong Halves
-const groupValues = {
-  '2 / 7': 0.5,
-  '3 / 4 / 6': 1,
-  '5': 1.5,
-  '8': 0,
-  '9': -0.5,
-  '10 / J / Q / K': -1,
-  'A': 0
-};
+/* === Рендер состояния (без Running Count в интерфейсе) === */
+function renderState() {
+  const remainingDecks = round(getRemainingDecks(), 2);
+  const trueCount = getTrueCount();
+  const edgeMsg = edgeText(trueCount);
 
-const TOTAL_DECKS = 8;
-const TOTAL_CARDS = TOTAL_DECKS * 52;
-const TOTAL_ACES = TOTAL_DECKS * 4;
+  if (!stateEl) return;
+  stateEl.textContent = `
+🂠 Cards seen: ${data.cards_entered} / ${TOTAL_CARDS}
+🂱 Aces seen: ${data.aces_count} / ${TOTAL_ACES}
+📉 Decks remaining: ${remainingDecks}
+📈 True Count: ${trueCount}
+${edgeMsg}
+  `;
+}
 
-const stateEl = document.getElementById('state');
-const decisionEl = document.getElementById('decision');
-
-const data = { count: 0, cards_entered: 0, aces_count: 0, history: [] };
-// после const data = { ... };
+/* === Инициализация демо-чипа и возможного пейволла === */
 setDemoClicks(getDemoClicks());
 if (isSubscribed()) {
   disableControls(false);
   const chip = document.getElementById('demo-chip');
   if (chip) chip.textContent = 'Подписка активна';
 } else {
-  // если демо уже исчерпано — сразу показать пейволл
-  if (getDemoClicks() >= DEMO_LIMIT) {
-    showPaywall();
-  }
+  if (getDemoClicks() >= DEMO_LIMIT) showPaywall();
 }
+
+/* === Обработчики кликов по кнопкам групп карт === */
+document.querySelectorAll('[data-group]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    if (!isSubscribed()) {
+      const clicks = getDemoClicks() + 1;
+      setDemoClicks(clicks);
+      if (clicks > DEMO_LIMIT) {
+        showPaywall();
+        return;
+      }
+    }
+    const g = btn.getAttribute('data-group');
+    if (g === 'A') data.aces_count += 1;
+    else data.count += groupValues[g] || 0;
+
+    data.cards_entered += 1;
+    data.history.push(g);
+    renderState();
+  });
+});
+
+/* === Undo === */
+const undoBtn = document.getElementById('undo');
+undoBtn?.addEventListener('click', ()=>{
+  if (!isSubscribed() && getDemoClicks() > DEMO_LIMIT) return;
+  const last = data.history.pop();
+  if (!last) return;
+  if (last === 'A') data.aces_count -= 1;
+  else data.count -= groupValues[last] || 0;
+  data.cards_entered -= 1;
+  renderState();
+});
+
+/* === Reset (с сохранением снимка для восстановления) === */
+const resetBtn = document.getElementById('reset');
+resetBtn?.addEventListener('click', ()=>{
+  if (!isSubscribed() && getDemoClicks() > DEMO_LIMIT) return;
+
+  // сохраняем снимок перед очисткой
+  lastState = { ...data, history: [...data.history] };
+
+  data.count = 0;
+  data.cards_entered = 0;
+  data.aces_count = 0;
+  data.history = [];
+  renderState();
+});
+
+/* === Restore (откат последнего сброса) === */
+const restoreBtn = document.getElementById('restore');
+restoreBtn?.addEventListener('click', ()=>{
+  if (!lastState) return;
+  // восстанавливаем глубокую копию
+  data = { ...lastState, history: [...lastState.history] };
+  renderState();
+  // очищаем снимок, чтобы нельзя было «накручивать»
+  lastState = null;
+});
+
+/* === Paywall: «есть ключ», «активировать», «позже» (если используешь) === */
+const haveKeyBtn = document.getElementById('have-key');
+const keyBlock   = document.getElementById('key-block');
+const keyInput   = document.getElementById('key-input');
+const applyKeyBtn= document.getElementById('apply-key');
+const keyMsg     = document.getElementById('key-msg');
+const closePaywallBtn = document.getElementById('close-paywall');
+
+haveKeyBtn?.addEventListener('click', ()=>{
+  keyBlock?.classList.remove('hidden');
+  keyInput?.focus();
+});
+closePaywallBtn?.addEventListener('click', ()=> hidePaywall());
+
+// Временная локальная активация (замени на серверную проверку позже)
+const VALID_KEY = 'BJ-HELPER-2025';
+applyKeyBtn?.addEventListener('click', ()=>{
+  const val = (keyInput?.value || '').trim();
+  if (!val) return;
+  if (val === VALID_KEY) {
+    localStorage.setItem(STORAGE_KEYS.subActive,'1');
+    keyMsg.textContent = 'Подписка активирована ✔';
+    hidePaywall();
+    disableControls(false);
+    const chip = document.getElementById('demo-chip');
+    if (chip) chip.textContent = 'Подписка активна';
+  } else {
+    keyMsg.textContent = 'Неверный ключ. Проверьте письмо после оплаты.';
+  }
+});
+
+/* === Первый рендер === */
+renderState();
 
 // TODO: Вставь сюда твой полный decision_data из бота
 const decision_data = {
