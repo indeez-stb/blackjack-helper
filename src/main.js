@@ -485,4 +485,54 @@ applyKeyBtn?.addEventListener('click', () => {
     keyMsg.textContent = 'Неверный ключ. Проверьте письмо после оплаты.';
   }
 });
+// --- Support modal ---
+(function(){
+  const email = 'support@bj-helper.com';
+  const subject = 'Вопрос по BJ Helper';
+  const body = [
+    'Здравствуйте!',
+    '',
+    'Опишите, пожалуйста, ваш вопрос как можно подробнее:',
+    '',
+    '--- Служебная информация ---',
+    `Страница: ${location.href}`,
+    `Браузер: ${navigator.userAgent}`,
+    `Время: ${new Date().toLocaleString()}`
+  ].join('\n');
+
+  const modal = document.getElementById('support-modal');
+  const open  = el => el?.classList.remove('hidden');
+  const close = el => el?.classList.add('hidden');
+
+  // Открыть модалку
+  document.getElementById('support-btn')?.addEventListener('click', () => {
+    // Генерируем ссылки каждый раз (актуальные страница/время)
+    document.getElementById('support-mailto').href =
+      `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    document.getElementById('support-gmail').href =
+      `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    document.getElementById('support-outlook').href =
+      `https://outlook.live.com/owa/?path=/mail/action/compose&to=${encodeURIComponent(email)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    open(modal);
+  });
+
+  // Копирование адреса
+  document.getElementById('support-copy')?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(email);
+      alert('Адрес support@bj-helper.com скопирован.');
+    } catch {
+      // Фолбэк, если clipboard запрещён
+      prompt('Скопируйте адрес вручную:', email);
+    }
+  });
+
+  // Закрыть модалку
+  document.getElementById('support-close')?.addEventListener('click', () => close(modal));
+  // Закрытие по клику на фон
+  modal?.addEventListener('click', (e) => { if (e.target === modal) close(modal); });
+})();
 
