@@ -485,22 +485,4 @@ applyKeyBtn?.addEventListener('click', () => {
     keyMsg.textContent = 'Неверный ключ. Проверьте письмо после оплаты.';
   }
 });
-// ===== Кнопка "Поддержка" — отправить вопрос на почту =====
-document.getElementById('support-btn')?.addEventListener('click', (e) => {
-  e.preventDefault();
 
-  const subject = 'Вопрос по BJ Helper';
-  const bodyLines = [
-    'Здравствуйте!',
-    '',
-    'Опишите, пожалуйста, ваш вопрос как можно подробнее:',
-    '',
-    '--- Служебная информация для поддержки ---',
-    `Страница: ${location.href}`,
-    `Браузер: ${navigator.userAgent}`,
-    `Время: ${new Date().toLocaleString()}`
-  ];
-
-  const mailto = `mailto:support@bj-helper.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join('\n'))}`;
-  window.location.href = mailto;
-});
