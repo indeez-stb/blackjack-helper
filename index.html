@@ -81,6 +81,27 @@
       </div>
     </footer>
   </div> <!-- конец .app -->
+<!-- 👇 ДОБАВЬ ПЕРЕД PAYWALL -->
+<div id="support-modal" class="overlay hidden" aria-hidden="true">
+  <div class="modal">
+    <h3>Связаться с поддержкой</h3>
+    <p class="muted">Выберите удобный способ:</p>
+    <div class="row" style="flex-wrap:wrap;gap:8px">
+      <a id="support-mailto" class="btn primary" href="#">Открыть почтовый клиент</a>
+      <a id="support-gmail" class="btn" target="_blank" rel="noopener" href="#">Gmail в браузере</a>
+      <a id="support-outlook" class="btn" target="_blank" rel="noopener" href="#">Outlook Web</a>
+      <button id="support-copy" class="btn ghost" type="button">Скопировать e-mail</button>
+      <button id="support-close" class="btn ghost" type="button">Закрыть</button>
+    </div>
+    <small class="muted">Почта: <a href="mailto:support@bj-helper.com">support@bj-helper.com</a></small>
+  </div>
+</div>
+<!-- 👆 ДОБАВЬ ПЕРЕД PAYWALL -->
+
+<!-- ПЕЙВОЛЛ -->
+<div id="paywall" class="overlay hidden" aria-hidden="true">
+  ...
+</div>
 
   <!-- ПЕЙВОЛЛ (вне .app) -->
   <div id="paywall" class="overlay hidden" aria-hidden="true">
