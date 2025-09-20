@@ -1,57 +1,142 @@
-/* базовое */
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0; background:#0f172a; color:#e2e8f0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; line-height:1.35;
+/* base */
+* { box-sizing: border-box }
+html, body { height: 100% }
+body {
+  margin: 0;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  line-height: 1.35;
 }
 
-/* каркас */
-.app{min-height:100vh; display:grid; grid-template-rows:auto 1fr auto; overflow:hidden}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;border-bottom:1px solid #1f2937;background:linear-gradient(180deg,#0f172a,#0b1220)}
-.brand{font-weight:600;white-space:nowrap}
-.actions{display:flex;gap:8px;flex-wrap:wrap}
-.grid-2{display:grid;gap:12px;grid-template-columns:1fr 1fr;padding:12px 16px;overflow:hidden}
-.card{background:#111827;border:1px solid #1f2937;border-radius:16px;padding:12px;min-height:0;display:flex;flex-direction:column;gap:10px}
-.card.fill{height:100%;overflow:hidden}
-h2{font-size:18px;margin:0 0 2px}
-
-/* кнопки/поля */
-button,.btn,input{font:inherit;color:#e2e8f0;border:1px solid #334155;background:#0b1220;border-radius:10px;padding:10px 12px}
-button,.btn{cursor:pointer}
-button:hover,.btn:hover{background:#111c33}
-.btn.ghost{background:transparent}
-.btn.primary{background:#0b1220;border-color:#475569;font-weight:600}
-.row{display:flex;gap:8px}
-.row.compact{margin-top:-2px}
-.fields{display:grid;gap:8px;grid-template-columns:1fr 140px}
-input{width:100%}
-.grid.buttons{display:grid;gap:8px;grid-template-columns:repeat(3,minmax(0,1fr))}
-
-/* вывод */
-pre{white-space:pre-wrap;border:1px solid #1f2937;background:#0b1220;border-radius:10px;padding:10px;margin:0}
-.state,.decision{flex:1 1 auto;overflow:auto;scrollbar-width:thin}
-.muted{opacity:.75;margin:0}
-
-/* шапка секции слева */
-.head-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.chip{background:#0b1220;border:1px solid #334155;border-radius:999px;padding:6px 10px;font-size:12px}
-
-/* пейволл */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
-.overlay.hidden{display:none}
-.modal{max-width:520px;width:100%;background:#111827;border:1px solid #1f2937;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
-.key-block{display:flex;gap:8px;align-items:center;margin-top:6px}
-.key-block.hidden{display:none}
-
-/* футер */
-.foot{border-top:1px solid #1f2937;padding:8px 16px;text-align:center;background:#0f172a}
-
-/* адаптив */
-@media (max-width:960px){
-  .grid-2{grid-template-columns:1fr;overflow:auto}
-  .fields{grid-template-columns:1fr}
+/* layout */
+.app {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
 }
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #1f2937;
+  background: linear-gradient(180deg, #0f172a, #0b1220);
+}
+.brand { font-weight: 600; white-space: nowrap }
+.actions { display: flex; gap: 8px; flex-wrap: wrap }
+.grid-2 {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+  padding: 12px 16px;
+  overflow: hidden;
+}
+.card {
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 16px;
+  padding: 12px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.card.fill { height: 100%; overflow: hidden }
+h2 { font-size: 18px; margin: 0 0 2px }
+
+/* buttons / inputs */
+button, .btn, input {
+  font: inherit;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  background: #0b1220;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+button, .btn { cursor: pointer }
+button:hover, .btn:hover { background: #111c33 }
+.btn.ghost { background: transparent }
+.btn.primary {
+  background: #0b1220;
+  border-color: #475569;
+  font-weight: 600;
+}
+.row { display: flex; gap: 8px }
+.row.compact { margin-top: -2px }
+.fields { display: grid; gap: 8px; grid-template-columns: 1fr 140px }
+input { width: 100% }
+.grid.buttons {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* outputs */
+pre {
+  white-space: pre-wrap;
+  border: 1px solid #1f2937;
+  background: #0b1220;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 0;
+}
+.state, .decision {
+  flex: 1 1 auto;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+.muted { opacity: .75; margin: 0 }
+
+/* header row on left panel */
+.head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.chip {
+  background: #0b1220;
+  border: 1px solid #334155;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+/* modal / paywall */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 50;
+}
+.overlay.hidden { display: none }
+.modal {
+  max-width: 520px;
+  width: 100%;
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.key-block {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 6px;
+}
+.key-block.hidden { display: none }
+
+/* footer */
 .footer {
   background: #111827;
   border-top: 1px solid #1f2937;
@@ -63,27 +148,25 @@ pre{white-space:pre-wrap;border:1px solid #1f2937;background:#0b1220;border-radi
   text-decoration: none;
   margin: 0 6px;
 }
-.footer-content a:hover { text-decoration: underline; }
+.footer-content a:hover { text-decoration: underline }
 .footer-content p {
   margin: 6px 0 0 0;
   font-size: 12px;
   color: #9ca3af;
 }
-/* фикс кнопки "Рассчитать" */
-#decision-form button {
-  margin-top: 8px; /* чуть опускаем кнопку вниз */
-}
 
-/* центрируем бренд в шапке */
-.topbar {
-  justify-content: center; /* логотип по центру */
-}
+/* fix: "Get Decision" button */
+#decision-form button { margin-top: 8px }
+
+/* center brand in topbar */
+.topbar { justify-content: center }
 .topbar .actions {
   position: absolute;
-  right: 16px; /* кнопки справа */
+  right: 16px;
 }
-/* ссылка-бренд в шапке как кнопка "на главную" */
-.brand-link{
+
+/* brand link (acts as Home button) */
+.brand-link {
   text-decoration: none;
   color: inherit;
   display: inline-block;
@@ -93,13 +176,18 @@ pre{white-space:pre-wrap;border:1px solid #1f2937;background:#0b1220;border-radi
   border: 1px solid transparent;
   cursor: pointer;
 }
-.brand-link:hover{
+.brand-link:hover {
   background: #0b1220;
   border-color: #1f2937;
 }
-.brand-link:focus-visible{
+.brand-link:focus-visible {
   outline: 2px solid #60a5fa;
   outline-offset: 2px;
   border-color: #60a5fa;
 }
 
+/* responsive */
+@media (max-width:960px){
+  .grid-2 { grid-template-columns:1fr; overflow:auto }
+  .fields { grid-template-columns:1fr }
+}
