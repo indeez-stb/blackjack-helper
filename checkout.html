@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Checkout — BJ Helper</title>
+  <title>Checkout — TrueCountBot</title>
   <link rel="stylesheet" href="styles.css" />
   <style>
     .plan { display:flex; gap:8px; align-items:center; flex-wrap:wrap }
@@ -25,7 +25,7 @@
 <body>
   <div class="app">
     <header class="topbar">
-      <a class="brand brand-link" href="index.html" aria-label="Home">🧠 BJ Helper — Checkout</a>
+      <a class="brand brand-link" href="index.html" aria-label="Home">🧠 TrueCountBot — Checkout</a>
       <nav class="actions">
         <a class="btn" href="guide.html">Guide</a>
         <a class="btn" href="index.html">App</a>
@@ -111,7 +111,7 @@
       <div class="footer-content">
         <a href="privacy-policy.html">Privacy Policy</a> |
         <a href="terms-of-service.html">Terms of Service</a>
-        <p>© 2025 BJ Helper. All rights reserved. 18+</p>
+        <p>© 2025 TrueCountBot. All rights reserved. 18+</p>
       </div>
     </footer>
   </div>
@@ -123,9 +123,9 @@
     // ==================================
     const ADDRESSES = {
       USDC: {
-        ERC20:   "0x9257036e42ba8e4c2eb518909c34ae4d8501f1ff",   // e.g. 0xabc...
-        BEP20:   "0x9257036e42ba8e4c2eb518909c34ae4d8501f1ff",   // e.g. 0xabc...
-        POLYGON: "0x9257036e42ba8e4c2eb518909c34ae4d8501f1ff"    // e.g. 0xabc...
+        ERC20:   "0x9257036e42ba8e4c2eb518909c34ae4d8501f1ff",
+        BEP20:   "0x9257036e42ba8e4c2eb518909c34ae4d8501f1ff",
+        POLYGON: "0x9257036e42ba8e4c2eb518909c34ae4d8501f1ff"
       },
       USDT: {
         ERC20:   "0x9257036e42ba8e4c2eb518909c34ae4d8501f1ff",
@@ -135,13 +135,12 @@
       }
     };
 
-    // (Optional) token contract addresses (for your reference; not required for manual payments)
+    // (Optional) token contract addresses (for reference)
     const CONTRACTS = {
       USDC: {
         ERC20:   "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC (Ethereum)
         BEP20:   "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d", // USDC (BSC)
         POLYGON: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"  // USDC (Polygon)
-        // TRC20 USDC not recommended (Circle discontinued support); omit on purpose
       },
       USDT: {
         ERC20:   "0xdAC17F958D2ee523a2206206994597C13D831ec7", // USDT (Ethereum)
@@ -157,8 +156,7 @@
     const PRICES_USD = { "1m": 15, "3m": 39, "6m": 69, "12m": 119 };
 
     // ==================================
-    // 3) UNIQUE AMOUNT FINGERPRINT
-    //    (no memo; identify by amount)
+    // 3) UNIQUE AMOUNT FINGERPRINT (no memo)
     // ==================================
     function uniqueCents() {
       // 0.01 .. 0.19 — small suffix to make amount unique per order
@@ -200,7 +198,7 @@
       const d = new Date();
       const pad = (x)=> String(x).padStart(2,'0');
       const rand = Math.random().toString(36).slice(2,8).toUpperCase();
-      return `BJH-${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}-${rand}`;
+      return `TCB-${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}-${rand}`;
     }
 
     function getRecipient(token, network){
@@ -273,7 +271,7 @@
       const lines = [
         'Hello support!',
         '',
-        'I have paid for BJ Helper. Here are my details:',
+        'I have paid for TrueCountBot. Here are my details:',
         '',
         `Order ID: ${CURRENT_ORDER.orderId}`,
         `Email: ${CURRENT_ORDER.email}`,
@@ -287,7 +285,7 @@
         '',
         'Thanks!'
       ];
-      const subject = `BJ Helper payment — ${CURRENT_ORDER.orderId}`;
+      const subject = `TrueCountBot payment — ${CURRENT_ORDER.orderId}`;
       const href = `mailto:truecountbot@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
       els.mailto.setAttribute('href', href);
       els.mailto.click();
