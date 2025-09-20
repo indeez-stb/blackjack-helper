@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Checkout — BJ Helper</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .plan { display:flex; gap:8px; align-items:center; flex-wrap:wrap }
+    .notice { border:1px solid #1f2937; background:#0b1220; border-radius:10px; padding:10px; }
+    .kbd { border:1px solid #334155; background:#0b1220; border-radius:6px; padding:2px 6px; font-family:ui-monospace, SFMono-Regular, Menlo, monospace }
+    .grid-2-eq { display:grid; grid-template-columns: 1fr 1fr; gap:12px }
+    @media (max-width: 960px){ .grid-2-eq { grid-template-columns:1fr } }
+    .copy { cursor:pointer }
+    .success { color:#86efac }
+    .warn { color:#fde68a }
+    .error { color:#fca5a5 }
+    .muted { opacity:.85 }
+    .wide { width:100% }
+    .small { font-size:12px; opacity:.8 }
+    .center { text-align:center }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <a class="brand brand-link" href="index.html" aria-label="Home">🧠 BJ Helper — Checkout</a>
+      <nav class="actions">
+        <a class="btn" href="guide.html">Guide</a>
+        <a class="btn" href="index.html">App</a>
+      </nav>
+    </header>
+
+    <main class="card" style="max-width:920px; margin:12px auto; width:calc(100% - 24px)">
+      <h2>Crypto payment</h2>
+      <p class="muted">Pay with <strong>USDC / USDT</strong> on your preferred network (Ethereum, Tron, BSC, Polygon). After we confirm the payment, we’ll email your access key.</p>
+
+      <!-- 1) Plan -->
+      <section class="notice">
+        <div class="plan">
+          <label class="kbd">Plan</label>
+          <select id="plan" class="btn">
+            <option value="1m">1 month</option>
+            <option value="3m">3 months</option>
+            <option value="6m">6 months</option>
+            <option value="12m">12 months</option>
+          </select>
+
+          <label class="kbd">Price</label>
+          <span id="price-usd" class="mono">$—</span>
+        </div>
+        <p class="small muted">You can change prices inside this page (see <span class="kbd">PRICES_USD</span> in the script).</p>
+      </section>
+
+      <!-- 2) Payer info -->
+      <section style="margin-top:12px" class="grid-2-eq">
+        <div class="card">
+          <h3 style="margin:0 0 8px">Your details</h3>
+          <label>Email</label>
+          <input id="email" placeholder="you@example.com" />
+          <div class="row" style="margin-top:8px; gap:8px; flex-wrap:wrap">
+            <div style="flex:1 1 220px">
+              <label>Token</label>
+              <select id="token" class="btn wide">
+                <option value="USDC">USDC</option>
+                <option value="USDT">USDT</option>
+              </select>
+            </div>
+            <div style="flex:1 1 220px">
+              <label>Network</label>
+              <select id="network" class="btn wide">
+                <option value="ERC20">Ethereum (ERC20)</option>
+                <option value="TRC20">Tron (TRC20)</option>
+                <option value="BEP20">BNB Smart Chain (BEP20)</option>
+                <option value="POLYGON">Polygon</option>
+              </select>
+            </div>
+          </div>
+          <label style="margin-top:8px">Amount (auto)</label>
+          <input id="amount" readonly class="mono" />
+          <button id="make-order" class="btn primary" style="margin-top:10px">Create payment</button>
+          <p id="form-msg" class="small"></p>
+        </div>
+
+        <!-- 3) Payment instructions -->
+        <div class="card">
+          <h3 style="margin:0 0 8px">Payment details</h3>
+          <div id="paybox" class="muted">Fill the form and click <em>Create payment</em>.</div>
+        </div>
+      </section>
+
+      <!-- 4) After payment -->
+      <section class="notice" style="margin-top:12px">
+        <h3 style="margin:0 0 8px">After payment</h3>
+        <ol>
+          <li>Send exactly the shown amount to the address.</li>
+          <li><strong>No memo needed</strong>. We match by <strong>exact amount + token + network + plan + time</strong>.</li>
+          <li>Click <span class="kbd">I paid</span> to prepare an email — we’ll verify and reply with your key.</li>
+        </ol>
+        <div class="row" style="margin-top:6px; flex-wrap:wrap; gap:8px">
+          <button id="paid" class="btn">I paid</button>
+          <a id="mailto" class="btn ghost" href="#" target="_blank" rel="noopener">Open email to support</a>
+        </div>
+      </section>
+
+      <p class="small center muted" style="margin-top:10px">Need help? <a href="mailto:support@bj-helper.com">support@bj-helper.com</a></p>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-content">
+        <a href="privacy-policy.html">Privacy Policy</a> |
+        <a href="terms-of-service.html">Terms of Service</a>
+        <p>© 2025 BJ Helper. All rights reserved. 18+</p>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // ==================================
+    // 1) YOUR ADDRESSES PER TOKEN/NETWORK
+    //    (PUT YOUR REAL ADDRESSES HERE)
+    // ==================================
+    const ADDRESSES = {
+      USDC: {
+        ERC20:   "YOUR_ETH_ADDRESS_FOR_USDC",   // e.g. 0xabc...
+        TRC20:   "YOUR_TRON_ADDRESS_FOR_USDC",  // e.g. TAbc...
+        BEP20:   "YOUR_BSC_ADDRESS_FOR_USDC",   // e.g. 0xabc...
+        POLYGON: "YOUR_POLYGON_ADDRESS_USDC"    // e.g. 0xabc...
+      },
+      USDT: {
+        ERC20:   "YOUR_ETH_ADDRESS_FOR_USDT",
+        TRC20:   "YOUR_TRON_ADDRESS_FOR_USDT",
+        BEP20:   "YOUR_BSC_ADDRESS_FOR_USDT",
+        POLYGON: "YOUR_POLYGON_ADDRESS_USDT"
+      }
+    };
+
+    // (Optional) token contract addresses (for your reference; not required for manual payments)
+    const CONTRACTS = {
+      USDC: {
+        ERC20:   "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC (Ethereum)
+        BEP20:   "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d", // USDC (BSC)
+        POLYGON: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"  // USDC (Polygon)
+        // TRC20 USDC not recommended (Circle discontinued support); omit on purpose
+      },
+      USDT: {
+        ERC20:   "0xdAC17F958D2ee523a2206206994597C13D831ec7", // USDT (Ethereum)
+        TRC20:   "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",         // USDT (Tron)
+        BEP20:   "0x55d398326f99059fF775485246999027B3197955", // USDT (BSC)
+        POLYGON: "0x3813e82e6f7098b9583FC0F33a962D02018B6803"  // USDT (Polygon)
+      }
+    };
+
+    // ==================================
+    // 2) PRICES (USD) — EDIT IF NEEDED
+    // ==================================
+    const PRICES_USD = { "1m": 15, "3m": 39, "6m": 69, "12m": 119 };
+
+    // ==================================
+    // 3) UNIQUE AMOUNT FINGERPRINT
+    //    (no memo; identify by amount)
+    // ==================================
+    function uniqueCents() {
+      // 0.01 .. 0.19 — small suffix to make amount unique per order
+      const i = Math.floor(Math.random()*19)+1;
+      return i / 100;
+    }
+    const $ = sel => document.querySelector(sel);
+    const fmt = (n, d=6) => Number(n).toLocaleString(undefined, {maximumFractionDigits:d});
+    const toFixed = (n, d=2) => (Math.round(n * 10**d) / 10**d).toFixed(d);
+
+    const els = {
+      plan:   $('#plan'),
+      price:  $('#price-usd'),
+      email:  $('#email'),
+      token:  $('#token'),
+      net:    $('#network'),
+      amount: $('#amount'),
+      make:   $('#make-order'),
+      box:    $('#paybox'),
+      msg:    $('#form-msg'),
+      paid:   $('#paid'),
+      mailto: $('#mailto')
+    };
+
+    function updatePrice() {
+      const usd = PRICES_USD[els.plan.value] || 0;
+      els.price.textContent = `$${usd}`;
+      els.amount.value = `${fmt(usd)} ${els.token.value}`;
+    }
+
+    ['change','input'].forEach(ev => {
+      els.plan.addEventListener(ev, updatePrice);
+      els.token.addEventListener(ev, updatePrice);
+      els.net.addEventListener(ev, updatePrice);
+    });
+    updatePrice();
+
+    function genOrderId() {
+      const d = new Date();
+      const pad = (x)=> String(x).padStart(2,'0');
+      const rand = Math.random().toString(36).slice(2,8).toUpperCase();
+      return `BJH-${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}-${rand}`;
+    }
+
+    function getRecipient(token, network){
+      return (ADDRESSES[token] && ADDRESSES[token][network]) || '';
+    }
+
+    function buildPaybox({orderId, token, network, usd, amountStr, recipient}) {
+      const rows = [
+        `<div><span class="kbd">Order ID:</span> <span class="mono">${orderId}</span></div>`,
+        `<div><span class="kbd">Network:</span> ${network}</div>`,
+        `<div><span class="kbd">Token:</span> ${token}</div>`,
+        `<div><span class="kbd">Amount:</span> <span class="mono">${amountStr}</span> <span class="muted">(exact; ≈ $${usd})</span></div>`,
+        `<div><span class="kbd">Recipient:</span> <span class="mono">${recipient}</span> <button class="btn ghost copy" data-copy="${recipient}">Copy</button></div>`,
+        `<p class="small warn">Always double-check the address and selected network before sending. Crypto transactions are irreversible.</p>`
+      ];
+      els.box.classList.remove('muted');
+      els.box.innerHTML = rows.join('');
+
+      els.box.querySelectorAll('.copy').forEach(btn=>{
+        btn.addEventListener('click', async ()=>{
+          try { await navigator.clipboard.writeText(btn.dataset.copy || ''); btn.textContent='Copied'; setTimeout(()=>btn.textContent='Copy',1200);} catch {}
+        });
+      });
+    }
+
+    let CURRENT_ORDER = null;
+
+    function createPayment(){
+      els.msg.textContent = '';
+      const email = (els.email.value || '').trim();
+      if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+        els.msg.textContent = 'Enter a valid email.';
+        els.msg.className = 'small error';
+        return;
+      }
+
+      const token   = els.token.value;   // USDC/USDT
+      const network = els.net.value;     // ERC20/TRC20/BEP20/POLYGON
+      const plan    = els.plan.value;
+      const usdBase = PRICES_USD[plan] || 0;
+      const cents   = uniqueCents();
+      const usd     = toFixed(usdBase + cents, 2);   // e.g., 39.07
+
+      const recipient = getRecipient(token, network);
+      if (!recipient) {
+        els.msg.textContent = 'Recipient address for this token/network is not set. Please contact support.';
+        els.msg.className = 'small error';
+        return;
+      }
+
+      const orderId = genOrderId();
+      const amountStr = `${usd} ${token}`;
+
+      CURRENT_ORDER = { orderId, email, plan, token, network, usd, amountStr, recipient };
+      buildPaybox({ orderId, token, network, usd, amountStr, recipient });
+
+      els.msg.textContent = 'Payment details generated. Send the exact amount.';
+      els.msg.className = 'small success';
+    }
+
+    els.make.addEventListener('click', createPayment);
+
+    // "I paid" — prepare email to support
+    els.paid.addEventListener('click', ()=>{
+      if (!CURRENT_ORDER) {
+        els.msg.textContent = 'Create a payment first.';
+        els.msg.className = 'small warn';
+        return;
+      }
+      const lines = [
+        'Hello support!',
+        '',
+        'I have paid for BJ Helper. Here are my details:',
+        '',
+        `Order ID: ${CURRENT_ORDER.orderId}`,
+        `Email: ${CURRENT_ORDER.email}`,
+        `Plan: ${CURRENT_ORDER.plan}`,
+        `Token: ${CURRENT_ORDER.token}`,
+        `Network: ${CURRENT_ORDER.network}`,
+        `Amount: ${CURRENT_ORDER.amountStr} (exact)`,
+        `Recipient: ${CURRENT_ORDER.recipient}`,
+        '',
+        'Please verify the transaction and send me the access key.',
+        '',
+        'Thanks!'
+      ];
+      const subject = `BJ Helper payment — ${CURRENT_ORDER.orderId}`;
+      const href = `mailto:support@bj-helper.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
+      els.mailto.setAttribute('href', href);
+      els.mailto.click();
+    });
+  </script>
+</body>
+</html>
