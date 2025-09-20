@@ -1,33 +1,33 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Blackjack Helper — Wong Halves</title>
-  <meta name="description" content="Blackjack Helper — калькулятор решений и тренажёр счёта Wong Halves для блэкджека. 18+." />
+  <meta name="description" content="Blackjack Helper — decision calculator and Wong Halves card counting trainer for blackjack. 18+." />
   <link rel="canonical" href="/" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app">
     <header class="topbar">
-      <a class="brand brand-link" href="index.html" aria-label="На главную">
-  🧠 Blackjack Helper — Wong Halves
-</a>
+      <a class="brand brand-link" href="index.html" aria-label="Home">
+        🧠 Blackjack Helper — Wong Halves
+      </a>
 
       <nav class="actions">
-  <a class="btn" href="guide.html">Руководство</a>
-  <button class="btn" type="button" id="support-btn">Поддержка</button>
-  <a class="btn primary" href="checkout.html">Купить подписку</a>
-</nav>
+        <a class="btn" href="guide.html">Guide</a>
+        <button class="btn" type="button" id="support-btn">Support</button>
+        <a class="btn primary" href="checkout.html">Subscribe</a>
+      </nav>
     </header>
 
     <main class="grid-2">
-      <!-- ЛЕВАЯ КОЛОНКА: СЧЁТ -->
+      <!-- LEFT COLUMN: COUNT -->
       <section class="card fill">
         <div class="head-row">
-          <h2>🂠 Счёт карт</h2>
-          <span id="demo-chip" class="chip">Демо: 0 / 100</span>
+          <h2>🂠 Card Counting</h2>
+          <span id="demo-chip" class="chip">Demo: 0 / 100</span>
         </div>
         <div class="grid buttons">
           <button type="button" data-group="2 / 7">2 / 7</button>
@@ -39,88 +39,84 @@
           <button type="button" data-group="A">A</button>
         </div>
         <div class="row compact">
-  <button type="button" id="undo">↩️ Отменить ход</button>
-  <button type="button" id="reset">♻️ Сброс</button>
-</div>
+          <button type="button" id="undo">↩️ Undo move</button>
+          <button type="button" id="reset">♻️ Reset</button>
+        </div>
 
         <pre id="state" class="state"></pre>
-        <p class="muted">18+. Инструмент для обучения/развлечения. Не гарантирует выигрыш.</p>
+        <p class="muted">18+. Training/entertainment tool. No guarantee of winnings.</p>
       </section>
 
-      <!-- ПРАВАЯ КОЛОНКА: DECISION -->
+      <!-- RIGHT COLUMN: DECISION -->
       <section class="card fill">
-        <h2>🧠 Помощник решений</h2>
+        <h2>🧠 Decision Helper</h2>
         <form id="decision-form" class="form">
           <div class="fields">
-            <input name="hand" placeholder="Рука: 9, 12, 16, A4, 4A, 88, 10+10, 1010" required />
-<input name="dealer" placeholder="Карта дилера: 2–A (только одна карта)" required />
-
+            <input name="hand" placeholder="Hand: 9, 12, 16, A4, 4A, 88, 10+10, 1010" required />
+            <input name="dealer" placeholder="Dealer card: 2–A (one upcard only)" required />
           </div>
-          <button class="btn primary" type="submit">Рассчитать</button>
+          <button class="btn primary" type="submit">Get Decision</button>
         </form>
         <pre id="decision" class="decision"></pre>
 
         <details class="tips">
-  <summary>Подсказки ввода</summary>
-  <ul>
-    <li>Пары (в поле «Рука»): <code>88</code>, <code>10+10</code>, <code>1010</code></li>
-    <li>Софт (в поле «Рука»): <code>A4</code> или <code>4A</code></li>
-    <li>Хард (в поле «Рука»): <code>9</code>, <code>12</code>, <code>16</code> и т. п.</li>
-    <li>Карта дилера — отдельное поле: <code>2</code>…<code>A</code> (видна только одна карта)</li>
-  </ul>
+          <summary>Input tips</summary>
+          <ul>
+            <li>Pairs (in “Hand”): <code>88</code>, <code>10+10</code>, <code>1010</code></li>
+            <li>Soft (in “Hand”): <code>A4</code> or <code>4A</code></li>
+            <li>Hard (in “Hand”): <code>9</code>, <code>12</code>, <code>16</code>, etc.</li>
+            <li>Dealer card is a separate field: <code>2</code>…<code>A</code> (only one upcard is visible)</li>
+          </ul>
         </details>
       </section>
     </main>
 
-    <!-- ✨ ФУТЕР внутри .app -->
+    <!-- ✨ FOOTER inside .app -->
     <footer class="footer">
       <div class="footer-content">
         <a href="privacy-policy.html">Privacy Policy</a> |
         <a href="terms-of-service.html">Terms of Service</a>
-        <p>© 2024 BJ Helper. All rights reserved. 18+</p>
+        <p>© 2025 BJ Helper. All rights reserved. 18+</p>
       </div>
     </footer>
-  </div> <!-- конец .app -->
-<!-- 👇 ДОБАВЬ ПЕРЕД PAYWALL -->
-<div id="support-modal" class="overlay hidden" aria-hidden="true">
-  <div class="modal">
-    <h3>Связаться с поддержкой</h3>
-    <p class="muted">Выберите удобный способ:</p>
-    <div class="row" style="flex-wrap:wrap;gap:8px">
-      <a id="support-mailto" class="btn primary" href="#">Открыть почтовый клиент</a>
-      <a id="support-gmail" class="btn" target="_blank" rel="noopener" href="#">Gmail в браузере</a>
-      <a id="support-outlook" class="btn" target="_blank" rel="noopener" href="#">Outlook Web</a>
-      <button id="support-copy" class="btn ghost" type="button">Скопировать e-mail</button>
-      <button id="support-close" class="btn ghost" type="button">Закрыть</button>
+  </div> <!-- end .app -->
+
+  <!-- 👇 SUPPORT MODAL (place before paywall) -->
+  <div id="support-modal" class="overlay hidden" aria-hidden="true">
+    <div class="modal">
+      <h3>Contact Support</h3>
+      <p class="muted">Choose a method:</p>
+      <div class="row" style="flex-wrap:wrap;gap:8px">
+        <a id="support-mailto" class="btn primary" href="#">Open email client</a>
+        <a id="support-gmail" class="btn" target="_blank" rel="noopener" href="#">Gmail in browser</a>
+        <a id="support-outlook" class="btn" target="_blank" rel="noopener" href="#">Outlook Web</a>
+        <button id="support-copy" class="btn ghost" type="button">Copy e-mail</button>
+        <button id="support-close" class="btn ghost" type="button">Close</button>
+      </div>
+      <small class="muted">Email: <a href="mailto:support@bj-helper.com">support@bj-helper.com</a></small>
     </div>
-    <small class="muted">Почта: <a href="mailto:support@bj-helper.com">support@bj-helper.com</a></small>
   </div>
-</div>
-<!-- 👆 ДОБАВЬ ПЕРЕД PAYWALL -->
+  <!-- 👆 SUPPORT MODAL -->
 
-<!-- ПЕЙВОЛЛ -->
-<div id="paywall" class="overlay hidden" aria-hidden="true">
-  ...
-</div>
-
-  <!-- ПЕЙВОЛЛ (вне .app) -->
+  <!-- PAYWALL -->
   <div id="paywall" class="overlay hidden" aria-hidden="true">
     <div class="modal">
-      <h3>Демо-лимит исчерпан</h3>
-      <p>Вы использовали 100 действий демо. Оформите подписку, чтобы продолжить без ограничений.</p>
+      <h3>Demo limit reached</h3>
+      <p>You’ve used 100 demo actions. Subscribe to continue without limits.</p>
       <div class="row" style="flex-wrap:wrap;gap:8px">
-        <a class="btn primary" href="/checkout">💳 Оформить подписку</a>
-        <button id="have-key" class="btn" type="button">У меня есть ключ</button>
-        <button id="close-paywall" class="btn ghost" type="button">Позже</button>
+        <a class="btn primary" href="checkout.html">💳 Subscribe</a>
+        <button id="have-key" class="btn" type="button">I have a key</button>
+        <button id="close-paywall" class="btn ghost" type="button">Later</button>
       </div>
       <div id="key-block" class="key-block hidden">
-        <input id="key-input" placeholder="Введите ключ доступа" />
-        <button id="apply-key" class="btn primary" type="button">Активировать</button>
+        <input id="key-input" placeholder="Enter access key" />
+        <button id="apply-key" class="btn primary" type="button">Activate</button>
         <div id="key-msg" class="muted"></div>
       </div>
-      <small class="muted">После оплаты вы получите ключ доступа на e-mail.</small>
+      <small class="muted">After payment you’ll receive an access key by e-mail.</small>
     </div>
   </div>
+
   <script type="module" src="src/main.js"></script>
 </body>
 </html>
