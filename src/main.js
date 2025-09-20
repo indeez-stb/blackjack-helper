@@ -488,7 +488,7 @@ applyKeyBtn?.addEventListener('click', () => {
 
 // --- Support modal ---
 (function(){
-  const email = 'support@bj-helper.com';
+  const email = 'truecountbot@gmail.com';
   const subject = 'Question about BJ Helper';
   const body = [
     'Hello!',
