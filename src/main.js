@@ -20,8 +20,8 @@ function getDemoClicks(){
 function setDemoClicks(v){
   localStorage.setItem(STORAGE_KEYS.demoClicks, String(v));
   const chip = document.getElementById('demo-chip');
-  if (chip && !isSubscribed()) chip.textContent = `Демо: ${Math.min(v,DEMO_LIMIT)} / ${DEMO_LIMIT}`;
-  if (chip && isSubscribed()) chip.textContent = 'Подписка активна';
+  if (chip && !isSubscribed()) chip.textContent = `Demo: ${Math.min(v,DEMO_LIMIT)} / ${DEMO_LIMIT}`;
+  if (chip && isSubscribed()) chip.textContent = 'Subscription active';
 }
 
 function disableControls(disabled){
@@ -65,7 +65,7 @@ setDemoClicks(getDemoClicks());
 if (isSubscribed()) {
   disableControls(false);
   const chip = document.getElementById('demo-chip');
-  if (chip) chip.textContent = 'Подписка активна';
+  if (chip) chip.textContent = 'Subscription active';
 } else {
   if (getDemoClicks() >= DEMO_LIMIT) showPaywall();
 }
@@ -439,7 +439,7 @@ document.getElementById('decision-form')?.addEventListener('submit', (e) => {
 
   const [player, d, type] = parseHandInput(hand, dealer);
   if (!player || !d){
-    decisionEl.textContent = '❌ Неверный формат. Примеры: 13-7, A4, 88, 10+10, 9-A';
+    decisionEl.textContent = '❌ Invalid format. Examples: 13-7, A4, 88, 10+10, 9-A';
     return;
   }
   const tc = getTrueCount();
@@ -476,37 +476,38 @@ applyKeyBtn?.addEventListener('click', () => {
   if (!val) return;
   if (val === VALID_KEY) {
     localStorage.setItem(STORAGE_KEYS.subActive,'1');
-    keyMsg.textContent = 'Подписка активирована ✔';
+    keyMsg.textContent = 'Subscription activated ✔';
     hidePaywall();
     disableControls(false);
     const chip = document.getElementById('demo-chip');
-    if (chip) chip.textContent = 'Подписка активна';
+    if (chip) chip.textContent = 'Subscription active';
   } else {
-    keyMsg.textContent = 'Неверный ключ. Проверьте письмо после оплаты.';
+    keyMsg.textContent = 'Invalid key. Please check the email after payment.';
   }
 });
+
 // --- Support modal ---
 (function(){
   const email = 'support@bj-helper.com';
-  const subject = 'Вопрос по BJ Helper';
+  const subject = 'Question about BJ Helper';
   const body = [
-    'Здравствуйте!',
+    'Hello!',
     '',
-    'Опишите, пожалуйста, ваш вопрос как можно подробнее:',
+    'Please describe your question in detail:',
     '',
-    '--- Служебная информация ---',
-    `Страница: ${location.href}`,
-    `Браузер: ${navigator.userAgent}`,
-    `Время: ${new Date().toLocaleString()}`
+    '--- System info ---',
+    `Page: ${location.href}`,
+    `Browser: ${navigator.userAgent}`,
+    `Time: ${new Date().toLocaleString()}`
   ].join('\n');
 
   const modal = document.getElementById('support-modal');
   const open  = el => el?.classList.remove('hidden');
   const close = el => el?.classList.add('hidden');
 
-  // Открыть модалку
+  // Open modal
   document.getElementById('support-btn')?.addEventListener('click', () => {
-    // Генерируем ссылки каждый раз (актуальные страница/время)
+    // Generate links each time (current page/time)
     document.getElementById('support-mailto').href =
       `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
@@ -519,20 +520,19 @@ applyKeyBtn?.addEventListener('click', () => {
     open(modal);
   });
 
-  // Копирование адреса
+  // Copy email
   document.getElementById('support-copy')?.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(email);
-      alert('Адрес support@bj-helper.com скопирован.');
+      alert('Address support@bj-helper.com copied.');
     } catch {
-      // Фолбэк, если clipboard запрещён
-      prompt('Скопируйте адрес вручную:', email);
+      // Fallback if clipboard is blocked
+      prompt('Copy this address:', email);
     }
   });
 
-  // Закрыть модалку
+  // Close modal
   document.getElementById('support-close')?.addEventListener('click', () => close(modal));
-  // Закрытие по клику на фон
+  // Click outside to close
   modal?.addEventListener('click', (e) => { if (e.target === modal) close(modal); });
 })();
-
